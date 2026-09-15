@@ -1,0 +1,213 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="zil-hero">
+  <div class="zil-wrap zil-hero-inner">
+    <div>
+      <p class="zil-eyebrow">Labour Research for Socio-Economic Justice</p>
+      <h1 class="zil-h1">Evidence for Decent Work and Inclusive Development</h1>
+      <p class="zil-lede">
+        The Zambia Institute for Labour Research and Development (ZILARD) is an independent,
+        non-profit research and policy institute dedicated to advancing decent work, inclusive
+        growth, and labour justice in Zambia. Explore our research and learn about our activities.
+      </p>
+      <div class="zil-cta-row">
+        <a href="{% url 'website:research' %}" class="zil-btn zil-btn-primary">Explore Our Research</a>
+        <a href="{% url 'website:our-work' %}" class="zil-btn zil-btn-secondary">Learn About Our Work</a>
+      </div>
+    </div>
+    <div class="zil-hero-art">
+      <img src="{% static 'website/img/zilard-logo.png' %}" alt="ZILARD emblem" style="width:100%;max-width:20rem;margin-inline:auto;display:block;">
+    </div>
+  </div>
+</section>
+
+{% if slides %}
+<section class="zil-section" style="padding-top:2.25rem;padding-bottom:1rem;">
+  <div class="zil-wrap">
+    <div class="zil-slideshow" data-zil-carousel aria-roledescription="carousel" aria-label="Featured highlights">
+      <div class="zil-slides">
+        {% for slide in slides %}
+        <div class="zil-slide{% if forloop.first %} is-active{% endif %}" role="group" aria-roledescription="slide" aria-label="{{ forloop.counter }} of {{ slides|length }}"{% if not forloop.first %} hidden{% endif %}>
+          <div class="zil-slide-media">
+            {% with img=slide.display_image %}
+              {% if img %}
+                <img src="{{ img.url }}" alt="">
+              {% else %}
+                <div class="zil-slide-placeholder" aria-hidden="true"></div>
+              {% endif %}
+            {% endwith %}
+            <div class="zil-slide-scrim" aria-hidden="true"></div>
+          </div>
+          <div class="zil-slide-copy">
+            {% if slide.display_tag %}<span class="zil-tag">{{ slide.display_tag }}</span>{% endif %}
+            <h3>{{ slide.display_title }}</h3>
+            {% if slide.display_caption %}<p>{{ slide.display_caption }}</p>{% endif %}
+            {% if slide.display_url %}<a href="{{ slide.display_url }}">Read more &rarr;</a>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if slides|length > 1 %}
+      <button type="button" class="zil-slide-nav zil-slide-prev" data-zil-prev aria-label="Previous slide">&larr;</button>
+      <button type="button" class="zil-slide-nav zil-slide-next" data-zil-next aria-label="Next slide">&rarr;</button>
+      <div class="zil-slide-dots" data-zil-dots>
+        {% for slide in slides %}
+        <button type="button" class="zil-slide-dot{% if forloop.first %} is-active{% endif %}" data-zil-dot="{{ forloop.counter0 }}" aria-label="Go to slide {{ forloop.counter }}"></button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <div class="zil-grid zil-grid-2" style="align-items:center;">
+      <div>
+        <p class="zil-eyebrow">Who we are</p>
+        <h2 class="zil-section-title" style="margin-top:0.35rem;">An independent institute for labour research</h2>
+        <p class="zil-prose">
+          Established in 2018, ZILARD provides evidence-based analysis, technical advice, and
+          advocacy support to trade unions, government ministries, development agencies, and
+          civil society organisations working to improve the conditions of work and livelihoods
+          for Zambian workers.
+        </p>
+        <a href="{% url 'website:about' %}" class="zil-card-link">Read more about ZILARD &rarr;</a>
+      </div>
+      <div class="zil-card">
+        <p class="zil-card-meta">Our mission</p>
+        <p class="zil-prose" style="margin:0;">
+          To generate knowledge that empowers working people and shapes fairer economic policies,
+          with a strong emphasis on applied research, participatory methodologies, and capacity
+          building -- guided by social dialogue, labour rights, and democratic accountability.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <div class="zil-section-head">
+      <p class="zil-eyebrow">Our expertise</p>
+      <h2 class="zil-section-title">Four thematic areas guide our work</h2>
+      <p class="zil-section-sub">Each area brings together research, engagement, and evidence aimed at fairer, safer, more inclusive work in Zambia.</p>
+    </div>
+    <div class="zil-grid zil-grid-4">
+      {% for theme in themes %}
+      <div class="zil-card">
+        <h3 class="zil-card-title">{{ theme.title }}</h3>
+        <p class="zil-card-body">{{ theme.summary }}</p>
+        <a href="{{ theme.get_absolute_url }}" class="zil-card-link">Learn more &rarr;</a>
+      </div>
+      {% empty %}
+      <p class="zil-muted">Thematic areas will appear here once published.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <div class="zil-section-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <p class="zil-eyebrow">Featured research</p>
+        <h2 class="zil-section-title">Recent publications</h2>
+      </div>
+      <a href="{% url 'website:research' %}" class="zil-card-link">View the research library &rarr;</a>
+    </div>
+    <div class="zil-grid zil-grid-3">
+      {% for pub in featured_publications %}
+      <div class="zil-card">
+        <span class="zil-tag">{{ pub.get_publication_type_display }}</span>
+        <h3 class="zil-card-title">{{ pub.title }}</h3>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ pub.publication_date|date:"F Y" }}</p>
+        <p class="zil-card-body">{{ pub.summary|truncatewords:28 }}</p>
+        <a href="{{ pub.get_absolute_url }}" class="zil-card-link">Read publication &rarr;</a>
+      </div>
+      {% empty %}
+      <p class="zil-muted">Publications will appear here once added in the admin.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if projects %}
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <div class="zil-section-head">
+      <p class="zil-eyebrow">Programmes and projects</p>
+      <h2 class="zil-section-title">Current work</h2>
+    </div>
+    <div class="zil-grid zil-grid-2">
+      {% for project in projects %}
+      <div class="zil-card">
+        <span class="zil-tag zil-tag-green">{{ project.get_status_display }}</span>
+        <h3 class="zil-card-title">{{ project.title }}</h3>
+        <p class="zil-card-body">{{ project.summary }}</p>
+        <a href="{{ project.get_absolute_url }}" class="zil-card-link">Project details &rarr;</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <div class="zil-section-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <p class="zil-eyebrow">Latest updates</p>
+        <h2 class="zil-section-title">News &amp; events</h2>
+      </div>
+      <a href="{% url 'website:news' %}" class="zil-card-link">View all news &rarr;</a>
+    </div>
+    <div class="zil-grid zil-grid-3">
+      {% for article in news_items %}
+      <div class="zil-card">
+        <span class="zil-tag {% if article.category == 'media' %}zil-tag-green{% endif %}">{{ article.get_category_display }}</span>
+        <h3 class="zil-card-title">{{ article.title }}</h3>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ article.published_date|date:"j F Y" }}</p>
+        <p class="zil-card-body">{{ article.summary }}</p>
+        <a href="{{ article.get_absolute_url }}" class="zil-card-link">Read more &rarr;</a>
+      </div>
+      {% empty %}
+      <p class="zil-muted">Dated news and updates will appear here once published.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if partners %}
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Collaboration</p>
+    <h2 class="zil-section-title">Working with our partners</h2>
+    <p class="zil-section-sub">Documented collaborations supporting our research and programmes.</p>
+    <div class="zil-grid zil-grid-4" style="margin-top:1.5rem;">
+      {% for partner in partners %}
+      <div class="zil-card">
+        <h3 class="zil-card-title" style="font-size:0.95rem;">{{ partner.name }}</h3>
+        <p class="zil-card-body">{{ partner.relationship }}</p>
+        {% if partner.period %}<p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ partner.period }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="zil-section">
+  <div class="zil-wrap" style="text-align:center;">
+    <h2 class="zil-section-title">Get in touch</h2>
+    <p class="zil-section-sub" style="margin-inline:auto;max-width:38rem;">
+      Discuss research, institutional collaboration, or a general enquiry with the ZILARD team.
+    </p>
+    <a href="{% url 'website:contact' %}" class="zil-btn zil-btn-primary" style="margin-top:1rem;">Contact Us</a>
+  </div>
+</section>
+{% endblock %}

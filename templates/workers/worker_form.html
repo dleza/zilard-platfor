@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}{% if worker %}Edit worker{% else %}Add worker{% endif %} | {{ app_name }}{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="grid gap-6" data-draft-form="worker-{{ worker.pk|default:'new' }}">
+  {% csrf_token %}
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-slate-950">{% if worker %}Edit worker{% else %}Add worker{% endif %}</h1>
+      <p class="mt-1 text-sm text-slate-600">{% if worker %}{{ worker.unique_id }}{% else %}New data collection record{% endif %}</p>
+    </div>
+    <div class="flex gap-2">
+      <a class="btn-secondary" href="{% if worker %}{% url 'workers:detail' worker.pk %}{% else %}{% url 'workers:list' %}{% endif %}">Cancel</a>
+      <button class="btn-primary" type="submit">Save record</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Identity and contact</h2>
+    {{ worker_form.non_field_errors }}
+    <div class="form-grid">
+      {% render_field worker_form.first_name %}
+      {% render_field worker_form.last_name %}
+      {% render_field worker_form.other_names %}
+      {% render_field worker_form.national_id %}
+      {% render_field worker_form.nationality %}
+      {% render_field worker_form.gender %}
+      {% render_field worker_form.date_of_birth %}
+      {% render_field worker_form.phone %}
+      {% render_field worker_form.email %}
+      {% render_field worker_form.photo %}
+    </div>
+    <div class="mt-4" data-file-preview></div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Employment and union</h2>
+    <div class="form-grid">
+      {% render_field worker_form.province %}
+      {% render_field worker_form.district %}
+      {% render_field worker_form.workplace %}
+      {% render_field worker_form.sector %}
+      {% render_field worker_form.occupation %}
+      {% render_field worker_form.employment_status %}
+      {% render_field worker_form.union_membership_status %}
+      {% render_field worker_form.union_name %}
+      {% render_field worker_form.leadership_participation %}
+      {% render_field worker_form.committee_participation %}
+    </div>
+    <div class="mt-4">
+      {% render_field worker_form.organising_activities %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Disability and accommodation</h2>
+    {{ disability_form.non_field_errors }}
+    <div class="form-grid">
+      {% render_field disability_form.disability_type %}
+      {% render_field disability_form.other_disability_type %}
+      {% render_field disability_form.severity %}
+      {% render_field disability_form.assistive_devices %}
+      {% render_field disability_form.accommodation_requirements %}
+      {% render_field disability_form.accessibility_challenges %}
+      {% render_field disability_form.functional_limitations %}
+    </div>
+    <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% render_field disability_form.wg_seeing %}
+      {% render_field disability_form.wg_hearing %}
+      {% render_field disability_form.wg_walking %}
+      {% render_field disability_form.wg_remembering %}
+      {% render_field disability_form.wg_self_care %}
+      {% render_field disability_form.wg_communicating %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Labour rights and coverage</h2>
+    {{ rights_form.non_field_errors }}
+    <div class="form-grid">
+      {% render_field rights_form.grievance_reported %}
+      {% render_field rights_form.case_status %}
+      {% render_field rights_form.legal_support_provided %}
+      {% render_field rights_form.collective_bargaining_coverage %}
+      {% render_field rights_form.social_protection_coverage %}
+    </div>
+    <div class="mt-4">
+      {% render_field rights_form.grievance_summary %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="panel-title">Location and supporting document</h2>
+      <button type="button" class="btn-secondary" data-capture-gps>Capture GPS</button>
+    </div>
+    <div class="mt-4 form-grid">
+      {% render_field worker_form.latitude %}
+      {% render_field worker_form.longitude %}
+      {% render_field worker_form.consent_to_store_data %}
+      {% render_field worker_form.data_verified %}
+      {% render_field document_form.title %}
+      {% render_field document_form.document_type %}
+      {% render_field document_form.file %}
+    </div>
+    <p class="mt-3 text-sm text-slate-600" data-draft-status aria-live="polite"></p>
+  </section>
+
+  <div class="flex justify-end gap-2">
+    <a class="btn-secondary" href="{% if worker %}{% url 'workers:detail' worker.pk %}{% else %}{% url 'workers:list' %}{% endif %}">Cancel</a>
+    <button class="btn-primary" type="submit">Save record</button>
+  </div>
+</form>
+{% endblock %}

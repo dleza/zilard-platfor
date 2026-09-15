@@ -1,0 +1,112 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ZILARD{% endblock %} | Zambia Institute for Labour Research and Development</title>
+  <meta name="description" content="{% block meta_description %}The Zambia Institute for Labour Research and Development (ZILARD) undertakes research on labour and employment in Zambia -- social protection, informal employment, trade, and the working lives of persons with disabilities.{% endblock %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'website/css/site.css' %}?v=1">
+  <link rel="icon" href="{% static 'website/img/zilard-logo-mark.png' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="zil-body">
+  <div class="zil-bead-rail zil-bead-rail-left" aria-hidden="true"></div>
+  <div class="zil-bead-rail zil-bead-rail-right" aria-hidden="true"></div>
+  <a class="zil-skip-link" href="#main-content">Skip to content</a>
+
+  <header class="zil-header">
+    <div class="zil-wrap zil-header-row">
+      <a href="{% url 'website:home' %}" class="zil-brand">
+        <img src="{% static 'website/img/zilard-logo-mark.png' %}" alt="ZILARD logo" class="zil-brand-mark">
+        <span class="zil-brand-text">
+          <span class="zil-brand-name">ZILARD</span>
+          <span class="zil-brand-full">Zambia Institute for Labour Research and Development</span>
+        </span>
+      </a>
+
+      <button type="button" class="zil-nav-toggle" data-zil-nav-toggle aria-expanded="false" aria-controls="zil-primary-nav">
+        <span class="sr-only">Menu</span>
+        <span aria-hidden="true">Menu</span>
+      </button>
+
+      <nav id="zil-primary-nav" class="zil-nav" aria-label="Primary">
+        <a href="{% url 'website:home' %}" class="zil-nav-link{% if request.resolver_match.url_name == 'home' %} is-active{% endif %}">Home</a>
+        <a href="{% url 'website:about' %}" class="zil-nav-link{% if request.resolver_match.url_name == 'about' %} is-active{% endif %}">About Us</a>
+        <a href="{% url 'website:our-work' %}" class="zil-nav-link{% if request.resolver_match.url_name == 'our-work' or request.resolver_match.url_name == 'work-detail' %} is-active{% endif %}">Our Work</a>
+        <a href="{% url 'website:research' %}" class="zil-nav-link{% if 'research' in request.resolver_match.url_name or 'publication' in request.resolver_match.url_name %} is-active{% endif %}">Research &amp; Publications</a>
+        <a href="{% url 'website:news' %}" class="zil-nav-link{% if 'news' in request.resolver_match.url_name %} is-active{% endif %}">News &amp; Events</a>
+        <a href="{% url 'website:contact' %}" class="zil-btn zil-btn-primary zil-nav-cta">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="zil-bead-rail-h zil-bead-rail-top" aria-hidden="true"></div>
+
+  {% if messages %}
+  <div class="zil-wrap zil-messages" aria-live="polite">
+    {% for message in messages %}
+      <div class="zil-alert">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <div class="zil-bead-rail-h zil-bead-rail-bottom" aria-hidden="true"></div>
+
+  <footer class="zil-footer">
+    <div class="zil-wrap zil-footer-grid">
+      <div>
+        <div class="zil-brand zil-footer-brand">
+          <img src="{% static 'website/img/zilard-logo-mark.png' %}" alt="ZILARD logo" class="zil-brand-mark zil-brand-mark-footer">
+          <span class="zil-brand-name">ZILARD</span>
+        </div>
+        <p class="zil-footer-slogan">&ldquo;Labour Research for Socio-Economic Justice&rdquo;</p>
+      </div>
+
+      <nav aria-label="Footer">
+        <h2 class="zil-footer-heading">Explore</h2>
+        <ul class="zil-footer-list">
+          <li><a href="{% url 'website:about' %}">About Us</a></li>
+          <li><a href="{% url 'website:our-work' %}">Our Work</a></li>
+          <li><a href="{% url 'website:research' %}">Research &amp; Publications</a></li>
+          <li><a href="{% url 'website:news' %}">News &amp; Events</a></li>
+          <li><a href="{% url 'website:contact' %}">Contact Us</a></li>
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="zil-footer-heading">Contact</h2>
+        <ul class="zil-footer-list">
+          {% if site_settings.office_address %}<li>{{ site_settings.office_address }}</li>{% endif %}
+          {% if site_settings.phone %}<li>Tel: {{ site_settings.phone }}</li>{% endif %}
+          {% if site_settings.mobile %}<li>Mobile: {{ site_settings.mobile }}</li>{% endif %}
+          {% if site_settings.email %}<li><a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></li>{% endif %}
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="zil-footer-heading">Connect</h2>
+        <ul class="zil-footer-list">
+          {% if site_settings.facebook_url %}<li><a href="{{ site_settings.facebook_url }}" rel="noopener" target="_blank">Facebook</a></li>{% endif %}
+          {% if site_settings.linkedin_url %}<li><a href="{{ site_settings.linkedin_url }}" rel="noopener" target="_blank">LinkedIn</a></li>{% endif %}
+          {% if site_settings.twitter_url %}<li><a href="{{ site_settings.twitter_url }}" rel="noopener" target="_blank">X / Twitter</a></li>{% endif %}
+          {% if not site_settings.facebook_url and not site_settings.linkedin_url and not site_settings.twitter_url %}
+            <li class="zil-muted">Confirmed accounts will be listed here.</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="zil-wrap zil-footer-bottom">
+      <p>&copy; {% now "Y" %} Zambia Institute for Labour Research and Development (ZILARD). All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="{% static 'website/js/site.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}{{ title }} | {{ app_name }}{% endblock %}
+{% block content %}
+<form method="post" class="grid gap-6">
+  {% csrf_token %}
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-slate-950">{{ title }}</h1>
+      <p class="mt-1 text-sm text-slate-600">Assign the user category, organisation, union visibility, and account status.</p>
+    </div>
+    <div class="flex gap-2">
+      <a class="btn-secondary" href="{% url 'workers:settings-users' %}">Cancel</a>
+      <button class="btn-primary" type="submit">Save user</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    {{ form.non_field_errors }}
+    <div class="form-grid">
+      {% render_field form.username %}
+      {% render_field form.first_name %}
+      {% render_field form.last_name %}
+      {% render_field form.email %}
+      {% render_field form.role %}
+      {% render_field form.assigned_union %}
+      {% render_field form.phone %}
+      {% render_field form.organisation %}
+      {% render_field form.password1 %}
+      {% render_field form.password2 %}
+      {% render_field form.is_active %}
+      {% render_field form.is_staff %}
+    </div>
+  </section>
+</form>
+
+<section class="panel">
+  <h2 class="panel-title">Two-factor authentication</h2>
+  {% if managed_user %}
+    {% if managed_user.totp_enabled %}
+      <p class="mt-1 text-sm text-slate-600">
+        2FA is <strong class="text-emerald-700">enabled</strong> for this account. Users turn it on themselves
+        from their own account by scanning a QR code &mdash; an admin cannot switch it on for them.
+        If they've lost their authenticator device, reset it here so they can re-enroll.
+      </p>
+      <form method="post" action="{% url 'users:settings-totp-reset' managed_user.pk %}" class="mt-3">
+        {% csrf_token %}
+        <button class="btn-secondary" type="submit">Reset 2FA for this user</button>
+      </form>
+    {% else %}
+      <p class="mt-1 text-sm text-slate-600">
+        2FA is not enabled. Users turn it on themselves from
+        <a class="font-semibold text-teal-700" href="{% url 'users:totp-setup' %}">Account &rarr; Two-factor authentication</a>
+        by scanning a QR code with an authenticator app &mdash; this can't be switched on from here.
+      </p>
+    {% endif %}
+  {% else %}
+    <p class="mt-1 text-sm text-slate-600">Save the user first, then they can enroll in 2FA themselves from their own account.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<section class="zil-section" style="padding-bottom:0;">
+  <div class="zil-wrap">
+    <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / About Us</p>
+    <p class="zil-eyebrow">About ZILARD</p>
+    <h1 class="zil-section-title" style="font-size:clamp(1.7rem,3vw,2.3rem);">Institutional profile</h1>
+    <div class="zil-prose" style="max-width:52rem;">
+      <p>
+        The Zambia Institute for Labour Research and Development (ZILARD) is an independent,
+        non-profit research and policy institute dedicated to advancing decent work, inclusive
+        growth, and labour justice in Zambia. Established in 2018, ZILARD provides evidence-based
+        analysis, technical advice, and advocacy support to trade unions, government ministries,
+        development agencies, and civil society organisations working to improve the conditions of
+        work and livelihoods for Zambian workers.
+      </p>
+      <p>
+        ZILARD is legally registered under the Patents and Companies Registration Agency (PACRA)
+        and governed by a multi-disciplinary Board of Directors drawn from academia, labour
+        movements, public institutions, and the private sector.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <div class="zil-grid zil-grid-2">
+      <div class="zil-card">
+        <p class="zil-card-meta">Mission</p>
+        <p class="zil-prose" style="margin:0;">
+          To generate knowledge that empowers working people and shapes fairer economic policies,
+          with a strong emphasis on applied research, participatory methodologies, and capacity
+          building.
+        </p>
+      </div>
+      <div class="zil-card">
+        <p class="zil-card-meta">Guiding commitments</p>
+        <p class="zil-prose" style="margin:0;">
+          Our work is informed by a commitment to social dialogue, labour rights, and democratic
+          accountability. Our research agenda responds directly to Zambia's national development
+          goals, the ILO's Decent Work Agenda, and the Sustainable Development Goals -- particularly
+          SDG 8: Decent Work and Economic Growth.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Research capacity</p>
+    <h2 class="zil-section-title">Institutional infrastructure and resources</h2>
+    <div class="zil-grid zil-grid-2">
+      <div>
+        <ul class="zil-prose" style="margin:0 0 0 1.1rem;">
+          <li>A core team of experienced researchers, including an economist, sociologist, communication specialists and field coordinators.</li>
+          <li>Access to a national pool of trained enumerators and community research assistants.</li>
+          <li>Digital data-collection tools, including ODK and KoboToolbox.</li>
+          <li>Analytical software licences for SPSS, NVivo, and Stata.</li>
+          <li>Research ethics clearance experience from the University of Zambia and NACOSTI, where required.</li>
+        </ul>
+      </div>
+      <div>
+        <p class="zil-card-meta" style="margin-bottom:0.6rem;">Institutional partnerships</p>
+        <ul class="zil-prose" style="margin:0 0 0 1.1rem;">
+          <li>The University of Zambia (Department of Economics and Institute of Economic and Social Research)</li>
+          <li>ZamStats -- for data alignment and methodology coordination</li>
+          <li>The Zambia Congress of Trade Unions (ZCTU)</li>
+          <li>Zambia Federation of Employers (ZFE)</li>
+        </ul>
+        <p class="zil-muted" style="margin-top:0.75rem;font-size:0.9rem;">
+          ZILARD also maintains a repository of research outputs, accessible via its forthcoming
+          online knowledge portal.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if partners %}
+<section class="zil-section">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Collaborations supporting our research</p>
+    <h2 class="zil-section-title">Documented collaborations</h2>
+    <div class="zil-grid zil-grid-2">
+      {% for partner in partners %}
+      <div class="zil-card">
+        <h3 class="zil-card-title">{{ partner.name }}</h3>
+        <p class="zil-card-body">{{ partner.relationship }}</p>
+        {% if partner.related_publication %}<a class="zil-card-link" href="{{ partner.related_publication.get_absolute_url }}">Related publication &rarr;</a>{% endif %}
+        {% if partner.period %}<p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ partner.period }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Our team</p>
+    <h2 class="zil-section-title">Governance and team</h2>
+
+    {% if team_leadership %}
+    <h3 class="zil-card-meta" style="margin-top:1rem;">Leadership &amp; management</h3>
+    <div class="zil-grid zil-team-grid">
+      {% for person in team_leadership %}
+      <div class="zil-card" style="text-align:center;">
+        {% if person.photo %}
+          <img src="{{ person.photo.url }}" alt="Photo of {{ person.full_name }}" class="zil-team-photo">
+        {% else %}
+          <div class="zil-team-photo-placeholder" aria-hidden="true">{{ person.full_name|slice:":1" }}</div>
+        {% endif %}
+        <h4 class="zil-card-title">{{ person.full_name }}</h4>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:700;">{{ person.position }}</p>
+        {% if person.bio %}<p class="zil-card-body">{{ person.bio|truncatewords:38 }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if team_staff %}
+    <h3 class="zil-card-meta" style="margin-top:2rem;">Staff</h3>
+    <div class="zil-grid zil-team-grid">
+      {% for person in team_staff %}
+      <div class="zil-card" style="text-align:center;">
+        {% if person.photo %}
+          <img src="{{ person.photo.url }}" alt="Photo of {{ person.full_name }}" class="zil-team-photo">
+        {% else %}
+          <div class="zil-team-photo-placeholder" aria-hidden="true">{{ person.full_name|slice:":1" }}</div>
+        {% endif %}
+        <h4 class="zil-card-title">{{ person.full_name }}</h4>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:700;">{{ person.position }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not team_leadership and not team_staff and not team_researchers %}
+    <p class="zil-muted">Team profiles will appear here once approved and published.</p>
+    {% endif %}
+
+    <p class="zil-muted" style="margin-top:1.5rem;font-size:0.9rem;">
+      Named Board of Directors membership will be added once supplied by ZILARD.
+    </p>
+  </div>
+</section>
+{% endblock %}

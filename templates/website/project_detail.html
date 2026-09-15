@@ -1,0 +1,37 @@
+{% extends "website/base.html" %}
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block content %}
+<section class="zil-section">
+  <div class="zil-wrap" style="max-width:48rem;">
+    <p class="zil-breadcrumb">
+      <a href="{% url 'website:home' %}">Home</a> / <a href="{% url 'website:our-work' %}">Our Work</a>
+      {% if project.theme %} / <a href="{{ project.theme.get_absolute_url }}">{{ project.theme.title }}</a>{% endif %}
+      / {{ project.title }}
+    </p>
+    <div class="zil-pill-row" style="margin-bottom:0.75rem;">
+      <span class="zil-tag zil-tag-green">{{ project.get_status_display }}</span>
+      {% if project.start_date %}<span class="zil-tag">{{ project.start_date|date:"Y" }}{% if project.end_date %}&ndash;{{ project.end_date|date:"Y" }}{% endif %}</span>{% endif %}
+    </div>
+    <h1 class="zil-section-title" style="font-size:clamp(1.6rem,3vw,2.1rem);">{{ project.title }}</h1>
+    <p class="zil-lede">{{ project.summary }}</p>
+
+    <dl class="zil-grid zil-grid-2" style="margin-top:1.5rem;">
+      {% if project.role %}
+      <div class="zil-card">
+        <dt class="zil-card-meta">ZILARD's role</dt>
+        <dd class="zil-prose" style="margin:0.35rem 0 0;">{{ project.role }}</dd>
+      </div>
+      {% endif %}
+      {% if project.participating_organisations %}
+      <div class="zil-card">
+        <dt class="zil-card-meta">Participating organisations</dt>
+        <dd class="zil-prose" style="margin:0.35rem 0 0;">{{ project.participating_organisations }}</dd>
+      </div>
+      {% endif %}
+    </dl>
+
+    {% if project.body %}<div class="zil-prose" style="margin-top:1.5rem;">{{ project.body|linebreaks }}</div>{% endif %}
+  </div>
+</section>
+{% endblock %}

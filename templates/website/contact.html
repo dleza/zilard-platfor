@@ -1,0 +1,74 @@
+{% extends "website/base.html" %}
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+<section class="zil-section">
+  <div class="zil-wrap zil-grid zil-grid-2" style="align-items:start;">
+    <div>
+      <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / Contact Us</p>
+      <p class="zil-eyebrow">Get in touch</p>
+      <h1 class="zil-section-title" style="font-size:clamp(1.7rem,3vw,2.3rem);">Contact Us</h1>
+      <p class="zil-section-sub" style="max-width:32rem;">
+        Use this form for research enquiries, collaboration, media requests, or general
+        questions. Please do not submit identity documents or confidential case details here.
+      </p>
+
+      <form method="post" novalidate style="margin-top:1.5rem;">
+        {% csrf_token %}
+        <div class="zil-honeypot" aria-hidden="true">{{ form.website }}</div>
+
+        <div class="zil-field">
+          <label for="{{ form.name.id_for_label }}">Name</label>
+          {{ form.name }}
+          {% if form.name.errors %}<ul class="errorlist">{% for e in form.name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+
+        <div class="zil-field">
+          <label for="{{ form.email.id_for_label }}">Email</label>
+          {{ form.email }}
+          {% if form.email.errors %}<ul class="errorlist">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+
+        <div class="zil-field">
+          <label for="{{ form.organisation.id_for_label }}">Organisation (optional)</label>
+          {{ form.organisation }}
+        </div>
+
+        <div class="zil-field">
+          <label for="{{ form.category.id_for_label }}">Enquiry category</label>
+          {{ form.category }}
+        </div>
+
+        <div class="zil-field">
+          <label for="{{ form.message.id_for_label }}">Message</label>
+          {{ form.message }}
+          {% if form.message.errors %}<ul class="errorlist">{% for e in form.message.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+
+        <button class="zil-btn zil-btn-primary" type="submit">Send message</button>
+      </form>
+    </div>
+
+    <aside class="zil-card">
+      <h2 class="zil-card-title" style="font-size:1rem;">Office</h2>
+      <address class="zil-prose" style="font-style:normal;">
+        {% if site_settings.office_address %}{{ site_settings.office_address }}<br>{% else %}<span class="zil-muted">Office address to be confirmed.</span><br>{% endif %}
+        {% if site_settings.phone %}Tel: {{ site_settings.phone }}<br>{% endif %}
+        {% if site_settings.mobile %}Mobile: {{ site_settings.mobile }}<br>{% endif %}
+        {% if site_settings.email %}<a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a><br>{% endif %}
+        {% if site_settings.office_hours %}{{ site_settings.office_hours }}{% endif %}
+      </address>
+
+      <h2 class="zil-card-title" style="font-size:1rem;margin-top:1.5rem;">Social media</h2>
+      <ul class="zil-prose" style="margin:0 0 0 1.1rem;">
+        {% if site_settings.facebook_url %}<li><a href="{{ site_settings.facebook_url }}" rel="noopener" target="_blank">Facebook</a></li>{% endif %}
+        {% if site_settings.linkedin_url %}<li><a href="{{ site_settings.linkedin_url }}" rel="noopener" target="_blank">LinkedIn</a></li>{% endif %}
+        {% if site_settings.twitter_url %}<li><a href="{{ site_settings.twitter_url }}" rel="noopener" target="_blank">X / Twitter</a></li>{% endif %}
+        {% if not site_settings.facebook_url and not site_settings.linkedin_url and not site_settings.twitter_url %}
+          <li class="zil-muted">Confirmed accounts will be listed here.</li>
+        {% endif %}
+      </ul>
+    </aside>
+  </div>
+</section>
+{% endblock %}

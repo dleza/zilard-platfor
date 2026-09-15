@@ -1,0 +1,71 @@
+{% extends "website/base.html" %}
+{% block title %}{{ publication.title }}{% endblock %}
+
+{% block content %}
+<section class="zil-section">
+  <div class="zil-wrap zil-grid zil-grid-2" style="align-items:start;">
+    <div>
+      <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / <a href="{% url 'website:research' %}">Research &amp; Publications</a> / {{ publication.title }}</p>
+      <span class="zil-tag">{{ publication.get_publication_type_display }}</span>
+      <h1 class="zil-section-title" style="font-size:clamp(1.55rem,2.8vw,2.1rem);margin-top:0.5rem;">{{ publication.title }}</h1>
+      <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">
+        {% if publication.authors %}{{ publication.authors }} &middot; {% endif %}{{ publication.publication_date|date:"F Y" }}
+      </p>
+
+      <h2 class="zil-card-meta" style="margin-top:1.75rem;">Plain-language summary</h2>
+      <div class="zil-prose">{{ publication.summary|linebreaks }}</div>
+
+      {% if publication.key_findings_list %}
+      <h2 class="zil-card-meta" style="margin-top:1.75rem;">Key findings</h2>
+      <ul class="zil-prose" style="margin-left:1.1rem;">
+        {% for finding in publication.key_findings_list %}<li>{{ finding }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if publication.acknowledgements %}
+      <h2 class="zil-card-meta" style="margin-top:1.75rem;">Acknowledgements &amp; citation</h2>
+      <div class="zil-prose">{{ publication.acknowledgements|linebreaks }}</div>
+      {% endif %}
+    </div>
+
+    <aside class="zil-card">
+      <h2 class="zil-card-title" style="font-size:1rem;">Access this publication</h2>
+      {% if publication.document %}
+        <a class="zil-btn zil-btn-primary" href="{{ publication.document.url }}">Download authorised copy</a>
+      {% endif %}
+      {% if publication.external_url %}
+        <a class="zil-btn zil-btn-secondary" href="{{ publication.external_url }}" rel="noopener" target="_blank">View on source website</a>
+      {% endif %}
+      {% if not publication.document and not publication.external_url %}
+        <p class="zil-muted" style="font-size:0.9rem;">A download link will be added once permissions are confirmed.</p>
+      {% endif %}
+      {% if publication.theme %}
+        <p class="zil-card-meta" style="margin-top:1rem;">Related theme</p>
+        <a href="{{ publication.theme.get_absolute_url }}">{{ publication.theme.title }}</a>
+      {% endif %}
+      {% if publication.research_activity %}
+        <p class="zil-card-meta" style="margin-top:1rem;">Related research activity</p>
+        <a href="{{ publication.research_activity.get_absolute_url }}">{{ publication.research_activity.title }}</a>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+
+{% if related_publications %}
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Related content</p>
+    <h2 class="zil-section-title">More publications</h2>
+    <div class="zil-grid zil-grid-3">
+      {% for pub in related_publications %}
+      <div class="zil-card">
+        <h3 class="zil-card-title">{{ pub.title }}</h3>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ pub.publication_date|date:"F Y" }}</p>
+        <a href="{{ pub.get_absolute_url }}" class="zil-card-link">Read publication &rarr;</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

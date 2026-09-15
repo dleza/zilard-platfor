@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="grid gap-5">
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-slate-950">{{ title }}</h1>
+      <p class="mt-1 text-sm text-slate-600">{{ description }}</p>
+    </div>
+    <div class="flex gap-2">
+      <a class="btn-secondary" href="{% url 'workers:settings' %}">Settings</a>
+      <a class="btn-primary" href="{% url create_url_name %}">Add new</a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <form method="get" class="flex flex-col gap-3 sm:flex-row">
+      <label class="sr-only" for="settings-search">Search settings</label>
+      <input id="settings-search" class="form-input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search by name or description">
+      <button class="btn-primary" type="submit">Search</button>
+    </form>
+  </section>
+
+  <section class="panel overflow-hidden p-0">
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Details</th>
+            <th scope="col">Status</th>
+            <th scope="col">Sort</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td class="font-semibold text-slate-950">{{ item.name }}</td>
+            <td>
+              {% if item.full_name %}<span class="block">{{ item.full_name }}</span>{% endif %}
+              {% if item.sector %}<span class="block text-sm text-slate-600">{{ item.get_sector_display }}</span>{% endif %}
+              {% if item.description %}<span class="block text-sm text-slate-600">{{ item.description|truncatechars:120 }}</span>{% endif %}
+            </td>
+            <td>
+              {% if item.is_active %}
+                <span class="status-pill status-good">Active</span>
+              {% else %}
+                <span class="status-pill status-muted">Inactive</span>
+              {% endif %}
+            </td>
+            <td>{{ item.sort_order }}</td>
+            <td><a class="text-emerald-800 underline" href="{% url edit_url_name item.pk %}">Edit</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="py-10 text-center text-slate-600">No settings records found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

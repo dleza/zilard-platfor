@@ -1,0 +1,66 @@
+<div class="panel overflow-hidden p-0">
+  <div class="overflow-x-auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">Worker</th>
+          <th scope="col">Location</th>
+          <th scope="col">Disability</th>
+          <th scope="col">Employment</th>
+          <th scope="col">Union</th>
+          <th scope="col">Captured</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for worker in workers %}
+        <tr>
+          <td>
+            <a class="font-semibold text-emerald-800 underline-offset-2 hover:underline" href="{% url 'workers:detail' worker.pk %}">{{ worker.full_name }}</a>
+            <span class="block text-xs text-slate-600">{{ worker.unique_id }}</span>
+          </td>
+          <td>{{ worker.district }}<span class="block text-xs text-slate-600">{{ worker.province }}</span></td>
+          <td>
+            {% if worker.disability_profile %}
+              {{ worker.disability_profile.get_disability_type_display }}
+              <span class="block text-xs text-slate-600">{{ worker.disability_profile.get_severity_display }}</span>
+            {% else %}
+              Not recorded
+            {% endif %}
+          </td>
+          <td>{{ worker.get_employment_status_display }}<span class="block text-xs text-slate-600">{{ worker.get_sector_display }}</span></td>
+          <td>{{ worker.union_name|default:"Not recorded" }}<span class="block text-xs text-slate-600">{{ worker.get_union_membership_status_display }}</span></td>
+          <td>
+            {{ worker.captured_by_display }}
+            <span class="block text-xs text-slate-600">{{ worker.get_capture_source_display }} · {{ worker.get_capture_mode_display }}</span>
+          </td>
+          <td>
+            {% if worker.data_verified %}
+              <span class="status-pill status-good">Verified</span>
+            {% else %}
+              <span class="status-pill status-muted">Draft</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="py-10 text-center text-slate-600">No matching worker records.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if is_paginated %}
+  <div class="flex items-center justify-between border-t border-slate-200 px-4 py-3 text-sm">
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    <div class="flex gap-2">
+      {% if page_obj.has_previous %}
+        <a class="btn-secondary" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+      {% if page_obj.has_next %}
+        <a class="btn-secondary" href="?page={{ page_obj.next_page_number }}">Next</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>

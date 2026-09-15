@@ -1,0 +1,48 @@
+{% extends "website/base.html" %}
+{% block title %}News & Events{% endblock %}
+
+{% block content %}
+<section class="zil-section" style="padding-bottom:1rem;">
+  <div class="zil-wrap">
+    <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / News &amp; Events</p>
+    <p class="zil-eyebrow">News &amp; events</p>
+    <h1 class="zil-section-title" style="font-size:clamp(1.7rem,3vw,2.3rem);">News &amp; Events</h1>
+    <p class="zil-section-sub" style="max-width:44rem;">
+      A dated record of ZILARD's own activities, alongside coverage published by other organisations.
+    </p>
+    <div class="zil-pill-row" style="margin-top:1.25rem;">
+      <a href="{% url 'website:news' %}" class="zil-pill{% if not current_category %} is-active{% endif %}">All</a>
+      <a href="?category=update" class="zil-pill{% if current_category == 'update' %} is-active{% endif %}">ZILARD updates</a>
+      <a href="?category=media" class="zil-pill{% if current_category == 'media' %} is-active{% endif %}">ZILARD in the media</a>
+    </div>
+  </div>
+</section>
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <div class="zil-grid zil-grid-3">
+      {% for article in articles %}
+      <div class="zil-card">
+        <span class="zil-tag {% if article.category == 'media' %}zil-tag-green{% endif %}">{{ article.get_category_display }}</span>
+        <h3 class="zil-card-title">{{ article.title }}</h3>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">
+          {{ article.published_date|date:"j F Y" }}{% if article.source_name %} &middot; {{ article.source_name }}{% endif %}
+        </p>
+        <p class="zil-card-body">{{ article.summary }}</p>
+        <a href="{{ article.get_absolute_url }}" class="zil-card-link">Read more &rarr;</a>
+      </div>
+      {% empty %}
+      <p class="zil-muted">No news items published yet.</p>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav class="zil-pill-row" style="margin-top:2rem;" aria-label="Pagination">
+      {% if page_obj.has_previous %}<a class="zil-pill" href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}">Previous</a>{% endif %}
+      <span class="zil-pill is-active">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a class="zil-pill" href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}">Next</a>{% endif %}
+    </nav>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

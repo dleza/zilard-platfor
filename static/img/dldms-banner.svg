@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">Disability labour data system banner</title>
+  <desc id="desc">Inclusive workers, Zambia map, data cards, and accessibility symbols for the labour data management system.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ecfeff"/>
+      <stop offset="0.58" stop-color="#f0fdf4"/>
+      <stop offset="1" stop-color="#fff7ed"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" x2="1">
+      <stop offset="0" stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="520" fill="url(#sky)"/>
+  <path d="M0 390 C170 330 260 360 410 312 C565 262 710 310 845 260 C1000 202 1090 246 1200 210 L1200 520 L0 520 Z" fill="#d1fae5"/>
+  <path d="M0 420 C150 370 270 410 430 365 C610 315 760 365 935 315 C1040 285 1115 300 1200 275 L1200 520 L0 520 Z" fill="#bbf7d0"/>
+  <g opacity="0.16" fill="none" stroke="#0f766e" stroke-width="3">
+    <path d="M105 95 h150 v86 h-150z"/>
+    <path d="M930 92 h150 v86 h-150z"/>
+    <path d="M720 70 h92 v92 h-92z"/>
+    <path d="M880 265 h110 v64 h-110z"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="690" y="115" width="340" height="245" rx="18" fill="#ffffff"/>
+    <rect x="720" y="145" width="120" height="18" rx="9" fill="#0f766e"/>
+    <rect x="720" y="185" width="260" height="14" rx="7" fill="#cbd5e1"/>
+    <rect x="720" y="218" width="220" height="14" rx="7" fill="#cbd5e1"/>
+    <rect x="720" y="252" width="260" height="58" rx="10" fill="#ecfeff"/>
+    <rect x="740" y="275" width="36" height="18" rx="9" fill="#2563eb"/>
+    <rect x="795" y="265" width="36" height="28" rx="9" fill="#0f766e"/>
+    <rect x="850" y="248" width="36" height="45" rx="9" fill="#b45309"/>
+    <rect x="905" y="232" width="36" height="61" rx="9" fill="#be123c"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="130" y="110" width="320" height="235" rx="18" fill="#ffffff"/>
+    <rect x="160" y="140" width="95" height="95" rx="48" fill="#dcfce7"/>
+    <circle cx="208" cy="170" r="22" fill="#0f766e"/>
+    <path d="M176 224 C181 196 234 196 240 224 Z" fill="#0f766e"/>
+    <rect x="280" y="145" width="130" height="16" rx="8" fill="#0f766e"/>
+    <rect x="280" y="181" width="110" height="13" rx="7" fill="#cbd5e1"/>
+    <rect x="280" y="211" width="135" height="13" rx="7" fill="#cbd5e1"/>
+    <rect x="160" y="270" width="250" height="38" rx="9" fill="#f8fafc"/>
+    <circle cx="187" cy="289" r="10" fill="#2563eb"/>
+    <rect x="210" y="281" width="170" height="13" rx="7" fill="#cbd5e1"/>
+  </g>
+  <g transform="translate(520 116)" filter="url(#shadow)">
+    <path d="M70 0 C112 16 146 52 153 98 C162 151 130 198 82 218 C43 236 2 216 -28 187 C-61 156 -72 111 -55 70 C-35 24 25 -17 70 0 Z" fill="#ffffff"/>
+    <path d="M20 145 C48 118 67 92 57 52 C89 66 103 93 99 124 C94 163 58 185 20 145 Z" fill="#22c55e"/>
+    <path d="M24 148 C50 142 74 135 95 123" fill="none" stroke="#166534" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="45" cy="60" r="12" fill="#0f766e"/>
+    <circle cx="84" cy="98" r="10" fill="#2563eb"/>
+    <circle cx="58" cy="145" r="11" fill="#b45309"/>
+  </g>
+  <g transform="translate(485 298)">
+    <circle cx="0" cy="0" r="30" fill="#0f766e"/>
+    <path d="M-9 -2 h18 M0 -11 v25 M-12 16 h24" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="100" cy="0" r="30" fill="#2563eb"/>
+    <path d="M88 -5 h24 M100 -17 v34 M90 18 h20" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="200" cy="0" r="30" fill="#b45309"/>
+    <path d="M190 -7 h20 M187 10 c13 12 29 12 42 0" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/>
+  </g>
+  <g fill="#0f172a">
+    <text x="130" y="420" font-family="Arial, sans-serif" font-size="46" font-weight="700">Disability Labour Data MIS</text>
+    <text x="132" y="462" font-family="Arial, sans-serif" font-size="22">Evidence for inclusive work, representation, and advocacy</text>
+  </g>
+</svg>

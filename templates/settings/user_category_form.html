@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}{{ title }} | {{ app_name }}{% endblock %}
+{% block content %}
+<form method="post" class="grid gap-6">
+  {% csrf_token %}
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-slate-950">{{ title }}</h1>
+      <p class="mt-1 text-sm text-slate-600">Categories map to the prototype RBAC roles used for dashboard and data access.</p>
+    </div>
+    <div class="flex gap-2">
+      <a class="btn-secondary" href="{% url 'workers:settings-user-categories' %}">Cancel</a>
+      <button class="btn-primary" type="submit">Save category</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    {{ form.non_field_errors }}
+    <div class="form-grid">
+      {% for field in form %}
+        {% render_field field %}
+      {% endfor %}
+    </div>
+  </section>
+</form>
+{% endblock %}

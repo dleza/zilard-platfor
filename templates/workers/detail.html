@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ worker.full_name }} | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="grid gap-5">
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div class="flex items-start gap-4">
+      {% if worker.photo %}
+        <img class="h-20 w-20 rounded-lg object-cover" src="{{ worker.photo.url }}" alt="">
+      {% else %}
+        <div class="flex h-20 w-20 items-center justify-center rounded-lg bg-slate-200 text-xl font-semibold text-slate-700">{{ worker.first_name|first }}{{ worker.last_name|first }}</div>
+      {% endif %}
+      <div>
+        <h1 class="text-3xl font-semibold text-slate-950">{{ worker.full_name }}</h1>
+        <p class="mt-1 text-sm text-slate-600">{{ worker.unique_id }} · {{ worker.district }}, {{ worker.province }}</p>
+        {% if worker.data_verified %}<span class="status-pill status-good mt-3">Verified</span>{% endif %}
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <a class="btn-secondary" href="{% url 'workers:list' %}">Back</a>
+      {% if can_edit %}<a class="btn-primary" href="{% url 'workers:edit' worker.pk %}">Edit</a>{% endif %}
+    </div>
+  </section>
+
+  <section class="grid gap-5 lg:grid-cols-3">
+    <article class="panel lg:col-span-2">
+      <h2 class="panel-title">Worker information</h2>
+      <dl class="detail-grid">
+        <div><dt>Gender</dt><dd>{{ worker.get_gender_display }}</dd></div>
+        <div><dt>Age</dt><dd>{{ worker.age|default:"Not recorded" }}</dd></div>
+        <div><dt>Phone</dt><dd>{{ worker.phone|default:"Not recorded" }}</dd></div>
+        <div><dt>Email</dt><dd>{{ worker.email|default:"Not recorded" }}</dd></div>
+        <div><dt>Workplace</dt><dd>{{ worker.workplace|default:"Not recorded" }}</dd></div>
+        <div><dt>Sector</dt><dd>{{ worker.get_sector_display }}</dd></div>
+        <div><dt>Occupation</dt><dd>{{ worker.occupation|default:"Not recorded" }}</dd></div>
+        <div><dt>Employment status</dt><dd>{{ worker.get_employment_status_display }}</dd></div>
+        <div><dt>Union</dt><dd>{{ worker.union_name|default:"Not recorded" }}</dd></div>
+        <div><dt>Union status</dt><dd>{{ worker.get_union_membership_status_display }}</dd></div>
+      </dl>
+    </article>
+
+    <article class="panel">
+      <h2 class="panel-title">Location</h2>
+      <dl class="detail-grid single">
+        <div><dt>Province</dt><dd>{{ worker.province }}</dd></div>
+        <div><dt>District</dt><dd>{{ worker.district }}</dd></div>
+        <div><dt>Latitude</dt><dd>{{ worker.latitude|default:"Not captured" }}</dd></div>
+        <div><dt>Longitude</dt><dd>{{ worker.longitude|default:"Not captured" }}</dd></div>
+      </dl>
+    </article>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Capture audit</h2>
+    <dl class="detail-grid">
+      <div><dt>Captured by</dt><dd>{{ worker.captured_by_display }}</dd></div>
+      <div><dt>Capture source</dt><dd>{{ worker.get_capture_source_display }}</dd></div>
+      <div><dt>Capture mode</dt><dd>{{ worker.get_capture_mode_display }}</dd></div>
+      <div><dt>Server received</dt><dd>{{ worker.created_at|date:"Y-m-d H:i" }}</dd></div>
+      <div><dt>Device captured</dt><dd>{{ worker.captured_at_device|date:"Y-m-d H:i"|default:"Same as server / not recorded" }}</dd></div>
+      <div><dt>Last updated by</dt><dd>{% if worker.updated_by %}{{ worker.updated_by.get_full_name|default:worker.updated_by.username }}{% else %}Not recorded{% endif %}</dd></div>
+    </dl>
+  </section>
+
+  <section class="grid gap-5 lg:grid-cols-2">
+    <article class="panel">
+      <h2 class="panel-title">Disability information</h2>
+      {% if profile %}
+      <dl class="detail-grid single">
+        <div><dt>Type</dt><dd>{{ profile.get_disability_type_display }}</dd></div>
+        <div><dt>Severity</dt><dd>{{ profile.get_severity_display }}</dd></div>
+        <div><dt>Assistive devices</dt><dd>{{ profile.assistive_devices|default:"Not recorded" }}</dd></div>
+        <div><dt>Accommodation requirements</dt><dd>{{ profile.accommodation_requirements|default:"Not recorded" }}</dd></div>
+        <div><dt>Functional limitations</dt><dd>{{ profile.functional_limitations|default:"Not recorded" }}</dd></div>
+      </dl>
+      {% else %}
+      <p class="mt-4 text-sm text-slate-600">No disability profile recorded.</p>
+      {% endif %}
+    </article>
+    <article class="panel">
+      <h2 class="panel-title">Labour rights</h2>
+      {% if rights %}
+      <dl class="detail-grid single">
+        <div><dt>Grievance reported</dt><dd>{% if rights.grievance_reported %}Yes{% else %}No{% endif %}</dd></div>
+        <div><dt>Case status</dt><dd>{{ rights.get_case_status_display }}</dd></div>
+        <div><dt>Legal support</dt><dd>{% if rights.legal_support_provided %}Yes{% else %}No{% endif %}</dd></div>
+        <div><dt>Collective bargaining</dt><dd>{% if rights.collective_bargaining_coverage %}Covered{% else %}Not recorded{% endif %}</dd></div>
+        <div><dt>Social protection</dt><dd>{% if rights.social_protection_coverage %}Covered{% else %}Not recorded{% endif %}</dd></div>
+      </dl>
+      {% else %}
+      <p class="mt-4 text-sm text-slate-600">No labour rights record captured.</p>
+      {% endif %}
+    </article>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Documents</h2>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {% for document in worker.documents.all %}
+        <a class="rounded-md border border-slate-200 p-4 hover:border-emerald-500" href="{{ document.file.url }}">
+          <span class="block font-medium text-slate-950">{{ document.title }}</span>
+          <span class="block text-sm text-slate-600">{{ document.get_document_type_display }}</span>
+        </a>
+      {% empty %}
+        <p class="text-sm text-slate-600">No uploaded documents.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

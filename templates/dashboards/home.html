@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard | {{ app_name }}{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{% endblock %}
+{% block content %}
+<div class="grid gap-6">
+  <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5" aria-label="Summary metrics">
+    <article class="metric-card metric-card--workers">
+      <span class="metric-label">Registered workers</span>
+      <strong class="metric-value">{{ total_workers }}</strong>
+    </article>
+    <article class="metric-card metric-card--union">
+      <span class="metric-label">Union members</span>
+      <strong class="metric-value">{{ union_members }}</strong>
+    </article>
+    <article class="metric-card metric-card--verified">
+      <span class="metric-label">Verified records</span>
+      <strong class="metric-value">{{ verified_workers }}</strong>
+    </article>
+    <article class="metric-card metric-card--workplaces">
+      <span class="metric-label">Workplaces</span>
+      <strong class="metric-value">{{ workplaces_total }}</strong>
+    </article>
+    <article class="metric-card metric-card--activities">
+      <span class="metric-label">Project activities</span>
+      <strong class="metric-value">{{ activities_total }}</strong>
+    </article>
+  </section>
+
+  <section class="chart-grid grid gap-6 lg:grid-cols-2">
+    <article class="panel chart-panel chart-panel--disability">
+      <h2 class="panel-title">Disability breakdown</h2>
+      <div class="chart-wrap"><canvas id="disabilityChart" aria-label="Disability breakdown chart"></canvas></div>
+    </article>
+    <article class="panel chart-panel chart-panel--gender">
+      <h2 class="panel-title">Gender distribution</h2>
+      <div class="chart-wrap"><canvas id="genderChart" aria-label="Gender distribution chart"></canvas></div>
+    </article>
+    <article class="panel chart-panel chart-panel--province lg:col-span-2">
+      <h2 class="panel-title">Provincial distribution</h2>
+      <div class="chart-wrap chart-wide"><canvas id="provinceChart" aria-label="Provincial distribution chart"></canvas></div>
+    </article>
+    <article class="panel chart-panel chart-panel--union">
+      <h2 class="panel-title">Union membership by union</h2>
+      <div class="chart-wrap"><canvas id="unionChart" aria-label="Union membership chart"></canvas></div>
+    </article>
+    <article class="panel chart-panel chart-panel--accessibility">
+      <h2 class="panel-title">Workplace accessibility</h2>
+      <div class="chart-wrap"><canvas id="accessibilityChart" aria-label="Workplace accessibility chart"></canvas></div>
+    </article>
+  </section>
+
+  <section class="panel chart-panel chart-panel--map">
+    <div class="mb-4 flex items-center justify-between gap-4">
+      <h2 class="panel-title">Worker location map</h2>
+      <a class="btn-secondary" href="{% url 'dashboards:map' %}">Open map</a>
+    </div>
+    <div id="dashboard-map" class="map-panel" aria-label="Map of worker locations"></div>
+  </section>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{% static 'js/maps.js' %}?v=20260907-leaflet-v3"></script>
+<script>
+  const disabilityData = JSON.parse('{{ disability_breakdown_json|escapejs }}');
+  const genderData = JSON.parse('{{ gender_distribution_json|escapejs }}');
+  const provinceData = JSON.parse('{{ province_counts_json|escapejs }}');
+  const unionData = JSON.parse('{{ union_counts_json|escapejs }}');
+  const accessibilityData = JSON.parse('{{ accessibility_counts_json|escapejs }}');
+  const mapMarkers = JSON.parse('{{ map_markers_json|escapejs }}');
+
+  const palette = ['#0f766e', '#2563eb', '#b45309', '#be123c', '#6d28d9', '#15803d', '#475569', '#c2410c', '#0369a1', '#7c2d12'];
+
+  function chartData(rows) {
+    return {
+      labels: rows.map(row => row.label),
+      datasets: [{ data: rows.map(row => row.value), backgroundColor: palette }]
+    };
+  }
+
+  function makeDoughnut(id, rows) {
+    new Chart(document.getElementById(id), {
+      type: 'doughnut',
+      data: chartData(rows),
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  function makeBar(id, rows, horizontal = false) {
+    new Chart(document.getElementById(id), {
+      type: 'bar',
+      data: chartData(rows),
+      options: {
+        indexAxis: horizontal ? 'y' : 'x',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { precision: 0 } } }
+      }
+    });
+  }
+
+  makeDoughnut('disabilityChart', disabilityData);
+  makeDoughnut('genderChart', genderData);
+  makeBar('provinceChart', provinceData);
+  makeBar('unionChart', unionData, true);
+  makeDoughnut('accessibilityChart', accessibilityData);
+
+  window.DLDMSMaps.renderLocalMap('dashboard-map', mapMarkers, {
+    title: 'Worker location map',
+    emptyMessage: 'No worker records with captured GPS coordinates yet.'
+  });
+</script>
+{% endblock %}

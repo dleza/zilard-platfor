@@ -1,0 +1,50 @@
+{% extends "website/base.html" %}
+{% block title %}Our Work{% endblock %}
+
+{% block content %}
+<section class="zil-section" style="padding-bottom:1rem;">
+  <div class="zil-wrap">
+    <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / Our Work</p>
+    <p class="zil-eyebrow">Our work</p>
+    <h1 class="zil-section-title" style="font-size:clamp(1.7rem,3vw,2.3rem);">Four thematic areas</h1>
+    <p class="zil-section-sub" style="max-width:44rem;">
+      ZILARD's work is structured around four thematic areas. Each answers three questions:
+      what issue is being addressed, what work ZILARD has undertaken, and what visitors can
+      read or learn from it.
+    </p>
+  </div>
+</section>
+
+<section class="zil-section">
+  <div class="zil-wrap zil-grid zil-grid-2">
+    {% for theme in themes %}
+    <div class="zil-card">
+      <h2 class="zil-card-title" style="font-size:1.2rem;">{{ theme.title }}</h2>
+      <p class="zil-card-body">{{ theme.summary }}</p>
+      <a href="{{ theme.get_absolute_url }}" class="zil-card-link">Explore this theme &rarr;</a>
+    </div>
+    {% empty %}
+    <p class="zil-muted">Thematic areas will appear here once published.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% if projects %}
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Programmes and projects</p>
+    <h2 class="zil-section-title">Time-bound work with a defined period</h2>
+    <div class="zil-grid zil-grid-3">
+      {% for project in projects %}
+      <div class="zil-card">
+        <span class="zil-tag zil-tag-green">{{ project.get_status_display }}</span>
+        <h3 class="zil-card-title">{{ project.title }}</h3>
+        <p class="zil-card-body">{{ project.summary }}</p>
+        <a href="{{ project.get_absolute_url }}" class="zil-card-link">Project details &rarr;</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

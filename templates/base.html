@@ -1,0 +1,111 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20260907-local-map-v2">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-950 antialiased">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  {% if user.is_authenticated %}
+  <button class="mobile-sidebar-toggle btn-secondary" type="button" data-sidebar-toggle aria-expanded="false" aria-controls="primary-sidebar">Menu</button>
+  <div class="sidebar-backdrop" data-sidebar-close aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside id="primary-sidebar" class="app-sidebar" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <a href="{% url 'dashboards:home' %}" class="sidebar-brand">
+          <span class="brand-mark">DL</span>
+          <span>
+            <span class="block text-base leading-tight">{{ app_short_name }}</span>
+            <span class="block text-xs font-medium text-slate-600">Disability labour data</span>
+          </span>
+        </a>
+        <button type="button" class="sidebar-close icon-btn" data-sidebar-close aria-label="Close menu">X</button>
+      </div>
+
+      <nav id="primary-nav" class="sidebar-nav" aria-label="Primary">
+        <a class="nav-link" href="{% url 'dashboards:home' %}">Dashboard</a>
+        <a class="nav-link" href="{% url 'workers:list' %}">Workers</a>
+        <a class="nav-link" href="{% url 'workers:workplaces' %}">Workplaces</a>
+        <a class="nav-link" href="{% url 'dashboards:map' %}">Map</a>
+        <a class="nav-link" href="{% url 'reports:index' %}">Reports</a>
+        {% if user.is_system_admin or user.role == "national_manager" %}<a class="nav-link" href="{% url 'feedback:list' %}">Feedback</a>{% endif %}
+        {% if user.is_system_admin %}<a class="nav-link" href="{% url 'workers:settings' %}">Settings</a>{% endif %}
+        {% if user.is_staff %}<a class="nav-link" href="/admin/">Admin</a>{% endif %}
+        <a class="nav-link" href="{% url 'users:totp-setup' %}">Two-factor authentication</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" class="icon-btn" data-contrast-toggle aria-label="Toggle high contrast">Aa</button>
+        <span class="text-sm font-semibold text-slate-700">{{ user.get_role_display }}</span>
+        <form method="post" action="{% url 'users:logout' %}">
+          {% csrf_token %}
+          <button class="btn-secondary w-full" type="submit">Sign out</button>
+        </form>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <div class="content-wrap pt-6">
+        <section class="landing-hero system-banner" aria-label="System banner">
+          <img src="{% static 'img/dldms-banner.svg' %}" alt="Disability Labour Data MIS banner showing inclusive workers, data cards, and Zambia coverage">
+          <div class="landing-hero-copy">
+            <strong class="landing-hero-title">{{ app_name }}</strong>
+            <span>Evidence for inclusive work, representation, and advocacy</span>
+          </div>
+        </section>
+      </div>
+
+      {% if messages %}
+      <div class="content-wrap pt-4" aria-live="polite">
+        {% for message in messages %}
+          <div class="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <main id="main-content" class="content-wrap py-6">
+  {% else %}
+  <header class="border-b border-slate-200 bg-white">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <a href="{% url 'dashboards:home' %}" class="sidebar-brand">
+        <span class="brand-mark">DL</span>
+        <span>
+          <span class="block text-base leading-tight">{{ app_short_name }}</span>
+          <span class="block text-xs font-medium text-slate-600">Disability labour data</span>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  {% if messages %}
+  <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8" aria-live="polite">
+    {% for message in messages %}
+      <div class="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main id="main-content" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+  {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  {% if user.is_authenticated %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    {% include "base/_feedback_modal.html" %}
+  {% endif %}
+
+  <script src="{% static 'js/app.js' %}?v=20260717-global-visuals"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

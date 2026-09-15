@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Roles Settings | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="grid gap-5">
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-slate-950">Roles Settings</h1>
+      <p class="mt-1 text-sm text-slate-600">Maintain user categories used when assigning access levels.</p>
+    </div>
+    <div class="flex gap-2">
+      <a class="btn-secondary" href="{% url 'workers:settings' %}">Settings</a>
+      {% if can_add_category %}
+        <a class="btn-primary" href="{% url 'workers:settings-user-category-create' %}">Add category</a>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <form method="get" class="flex flex-col gap-3 sm:flex-row">
+      <label class="sr-only" for="category-search">Search user categories</label>
+      <input id="category-search" class="form-input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search by role, name, or description">
+      <button class="btn-primary" type="submit">Search</button>
+    </form>
+  </section>
+
+  <section class="panel overflow-hidden p-0">
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Role Code</th>
+            <th scope="col">Description</th>
+            <th scope="col">Status</th>
+            <th scope="col">Sort</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for category in user_categories %}
+          <tr>
+            <td class="font-semibold text-slate-950">{{ category.display_name }}</td>
+            <td>{{ category.get_role_display }}</td>
+            <td>{{ category.description|default:"No description"|truncatechars:140 }}</td>
+            <td>
+              {% if category.is_active %}
+                <span class="status-pill status-good">Active</span>
+              {% else %}
+                <span class="status-pill status-muted">Inactive</span>
+              {% endif %}
+            </td>
+            <td>{{ category.sort_order }}</td>
+            <td><a class="text-emerald-800 underline" href="{% url 'workers:settings-user-category-edit' category.pk %}">Edit</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="py-10 text-center text-slate-600">No user categories found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% load form_tags %}
+{% csrf_token %}
+<div class="grid gap-4 p-5">
+  {{ global_feedback_form.page_url }}
+  {% render_field global_feedback_form.contact_name %}
+  {% render_field global_feedback_form.contact_email %}
+  {% render_field global_feedback_form.role_or_group %}
+  {% render_field global_feedback_form.comment %}
+  <div class="flex justify-end gap-3">
+    <button type="button" class="btn-secondary" data-feedback-close>Cancel</button>
+    <button type="submit" class="btn-primary">Send feedback</button>
+  </div>
+</div>

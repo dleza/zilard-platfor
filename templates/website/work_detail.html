@@ -1,0 +1,75 @@
+{% extends "website/base.html" %}
+{% block title %}{{ theme.title }}{% endblock %}
+
+{% block content %}
+<section class="zil-section" style="padding-bottom:1rem;">
+  <div class="zil-wrap">
+    <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / <a href="{% url 'website:our-work' %}">Our Work</a> / {{ theme.title }}</p>
+    <p class="zil-eyebrow">Thematic area</p>
+    <h1 class="zil-section-title" style="font-size:clamp(1.7rem,3vw,2.3rem);">{{ theme.title }}</h1>
+    <p class="zil-section-sub" style="max-width:44rem;">{{ theme.summary }}</p>
+    {% if theme.body %}<div class="zil-prose" style="max-width:48rem;margin-top:1rem;">{{ theme.body|linebreaks }}</div>{% endif %}
+  </div>
+</section>
+
+{% if research_activities %}
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Related research</p>
+    <h2 class="zil-section-title">Research activities under this theme</h2>
+    <div class="zil-grid zil-grid-3">
+      {% for activity in research_activities %}
+      <div class="zil-card">
+        <span class="zil-tag">{{ activity.year }}</span>
+        <h3 class="zil-card-title">{{ activity.title }}</h3>
+        <p class="zil-card-body">{{ activity.purpose|truncatewords:26 }}</p>
+        <a href="{{ activity.get_absolute_url }}" class="zil-card-link">Read more &rarr;</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if publications %}
+<section class="zil-section">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Publications</p>
+    <h2 class="zil-section-title">Reports linked to this theme</h2>
+    <div class="zil-grid zil-grid-3">
+      {% for pub in publications %}
+      <div class="zil-card">
+        <span class="zil-tag zil-tag-green">{{ pub.get_publication_type_display }}</span>
+        <h3 class="zil-card-title">{{ pub.title }}</h3>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ pub.publication_date|date:"F Y" }}</p>
+        <a href="{{ pub.get_absolute_url }}" class="zil-card-link">Read publication &rarr;</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if projects %}
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Projects</p>
+    <h2 class="zil-section-title">Projects under this theme</h2>
+    <div class="zil-grid zil-grid-3">
+      {% for project in projects %}
+      <div class="zil-card">
+        <span class="zil-tag zil-tag-green">{{ project.get_status_display }}</span>
+        <h3 class="zil-card-title">{{ project.title }}</h3>
+        <p class="zil-card-body">{{ project.summary }}</p>
+        <a href="{{ project.get_absolute_url }}" class="zil-card-link">Project details &rarr;</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if not research_activities and not publications and not projects %}
+<section class="zil-section"><div class="zil-wrap"><p class="zil-muted">Related content for this theme will appear here as it is published.</p></div></section>
+{% endif %}
+{% endblock %}

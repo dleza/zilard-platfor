@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Disability labour data system background</title>
+  <desc id="desc">Soft abstract background with data cards, Zambia coverage lines, and inclusive labour system colors.</desc>
+  <defs>
+    <linearGradient id="base" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ecfeff"/>
+      <stop offset="0.48" stop-color="#eff6ff"/>
+      <stop offset="1" stop-color="#f0fdf4"/>
+    </linearGradient>
+    <radialGradient id="teal" cx="0.2" cy="0.2" r="0.55">
+      <stop offset="0" stop-color="#14b8a6" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#14b8a6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blue" cx="0.82" cy="0.18" r="0.48">
+      <stop offset="0" stop-color="#2563eb" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gold" cx="0.84" cy="0.88" r="0.5">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#base)"/>
+  <rect width="1600" height="1200" fill="url(#teal)"/>
+  <rect width="1600" height="1200" fill="url(#blue)"/>
+  <rect width="1600" height="1200" fill="url(#gold)"/>
+  <path d="M0 875 C240 760 390 840 625 735 C845 637 1000 712 1215 620 C1395 542 1500 585 1600 525 L1600 1200 L0 1200 Z" fill="#bbf7d0" opacity="0.34"/>
+  <path d="M0 980 C245 858 450 940 700 830 C930 730 1115 805 1365 710 C1480 666 1540 670 1600 638 L1600 1200 L0 1200 Z" fill="#bfdbfe" opacity="0.26"/>
+  <g fill="none" stroke="#0f766e" stroke-width="3" opacity="0.16">
+    <rect x="115" y="120" width="230" height="135" rx="18"/>
+    <rect x="1210" y="105" width="260" height="150" rx="18"/>
+    <rect x="1020" y="760" width="230" height="130" rx="18"/>
+    <path d="M420 220 C580 95 795 105 960 225 C1110 335 1285 345 1450 255"/>
+    <path d="M160 650 C350 520 590 560 760 675 C930 790 1160 780 1390 650"/>
+  </g>
+  <g opacity="0.18">
+    <circle cx="287" cy="793" r="82" fill="#0f766e"/>
+    <circle cx="1175" cy="390" r="96" fill="#2563eb"/>
+    <circle cx="1332" cy="945" r="72" fill="#f59e0b"/>
+  </g>
+  <g fill="#ffffff" opacity="0.32">
+    <rect x="205" y="195" width="95" height="14" rx="7"/>
+    <rect x="205" y="225" width="62" height="11" rx="6"/>
+    <rect x="1266" y="176" width="140" height="14" rx="7"/>
+    <rect x="1266" y="210" width="96" height="11" rx="6"/>
+    <rect x="1076" y="822" width="120" height="14" rx="7"/>
+    <rect x="1076" y="856" width="70" height="11" rx="6"/>
+  </g>
+</svg>

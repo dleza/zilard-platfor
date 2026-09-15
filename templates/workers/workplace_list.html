@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Workplaces | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="grid gap-5">
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-slate-950">Workplaces</h1>
+      <p class="mt-1 text-sm text-slate-600">{{ page_obj.paginator.count }} records</p>
+    </div>
+    {% if user.can_edit_records %}
+      <a class="btn-primary" href="{% url 'workers:workplace-create' %}">Add workplace</a>
+    {% endif %}
+  </section>
+  <section class="panel">
+    <form method="get" class="flex flex-col gap-3 sm:flex-row">
+      <label class="sr-only" for="workplace-search">Search workplaces</label>
+      <input id="workplace-search" class="form-input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search by employer, district, or province">
+      <button class="btn-primary" type="submit">Search</button>
+    </form>
+  </section>
+  <section class="panel overflow-hidden p-0">
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Employer</th>
+            <th scope="col">Location</th>
+            <th scope="col">Sector</th>
+            <th scope="col">Accessibility</th>
+            <th scope="col">Workers</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for workplace in workplaces %}
+          <tr>
+            <td>{{ workplace.employer_name }}<span class="block text-xs text-slate-600">{{ workplace.workplace_name }}</span></td>
+            <td>{{ workplace.district }}<span class="block text-xs text-slate-600">{{ workplace.province }}</span></td>
+            <td>{{ workplace.get_sector_display }}</td>
+            <td>{{ workplace.get_accessibility_status_display }}</td>
+            <td>{{ workplace.workers.count }}</td>
+            <td>{% if user.can_edit_records %}<a class="text-emerald-800 underline" href="{% url 'workers:workplace-edit' workplace.pk %}">Edit</a>{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="py-10 text-center text-slate-600">No workplace records.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

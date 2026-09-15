@@ -1,0 +1,83 @@
+{% extends "website/base.html" %}
+{% block title %}Research & Publications{% endblock %}
+
+{% block content %}
+<section class="zil-section" style="padding-bottom:1rem;">
+  <div class="zil-wrap">
+    <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / Research &amp; Publications</p>
+    <p class="zil-eyebrow">Research library</p>
+    <h1 class="zil-section-title" style="font-size:clamp(1.7rem,3vw,2.3rem);">Research &amp; Publications</h1>
+    <p class="zil-section-sub" style="max-width:44rem;">
+      Our research portfolio and published outputs, organised by theme and year.
+    </p>
+
+    <form method="get" style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:flex-end;">
+      <div class="zil-field" style="margin:0;min-width:14rem;flex:1;">
+        <label for="q">Search title or summary</label>
+        <input class="field-input" type="search" id="q" name="q" value="{{ query }}" placeholder="e.g. disability, informal economy">
+      </div>
+      <div class="zil-field" style="margin:0;">
+        <label for="theme">Theme</label>
+        <select class="field-input" id="theme" name="theme">
+          <option value="">All themes</option>
+          {% for t in themes %}
+          <option value="{{ t.slug }}" {% if t.slug == current_theme %}selected{% endif %}>{{ t.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="zil-field" style="margin:0;">
+        <label for="year">Year</label>
+        <select class="field-input" id="year" name="year">
+          <option value="">All years</option>
+          {% for y in years %}
+          <option value="{{ y }}" {% if current_year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="zil-btn zil-btn-primary" type="submit">Filter</button>
+    </form>
+  </div>
+</section>
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <h2 class="zil-card-meta" style="margin-bottom:1rem;">Reports &amp; Publications</h2>
+    <div class="zil-grid zil-grid-3">
+      {% for pub in publications %}
+      <div class="zil-card">
+        <span class="zil-tag">{{ pub.get_publication_type_display }}</span>
+        <h3 class="zil-card-title">{{ pub.title }}</h3>
+        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ pub.publication_date|date:"F Y" }}{% if pub.theme %} &middot; {{ pub.theme.title }}{% endif %}</p>
+        <p class="zil-card-body">{{ pub.summary|truncatewords:24 }}</p>
+        <a href="{{ pub.get_absolute_url }}" class="zil-card-link">Read publication &rarr;</a>
+      </div>
+      {% empty %}
+      <p class="zil-muted">No publications match these filters yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <h2 class="zil-card-meta" style="margin-bottom:1rem;">Research Portfolio</h2>
+    <p class="zil-muted" style="margin-top:-0.5rem;margin-bottom:1.5rem;max-width:44rem;font-size:0.9rem;">
+      A listed research activity is a record of work undertaken -- it is not automatically a
+      published, downloadable report. Where a report is available, the entry links to it.
+    </p>
+    <div class="zil-grid zil-grid-3">
+      {% for activity in research_activities %}
+      <div class="zil-card">
+        <span class="zil-tag zil-tag-green">{{ activity.year }} &middot; {{ activity.get_status_display }}</span>
+        <h3 class="zil-card-title">{{ activity.title }}</h3>
+        {% if activity.funder_collaborators %}<p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">{{ activity.funder_collaborators }}</p>{% endif %}
+        <p class="zil-card-body">{{ activity.purpose|truncatewords:22 }}</p>
+        <a href="{{ activity.get_absolute_url }}" class="zil-card-link">Read more &rarr;</a>
+      </div>
+      {% empty %}
+      <p class="zil-muted">No research portfolio entries match these filters yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

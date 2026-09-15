@@ -1,0 +1,51 @@
+{% extends "website/base.html" %}
+{% block title %}{{ activity.title }}{% endblock %}
+
+{% block content %}
+<section class="zil-section">
+  <div class="zil-wrap" style="max-width:48rem;">
+    <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / <a href="{% url 'website:research' %}">Research &amp; Publications</a> / {{ activity.title }}</p>
+    <div class="zil-pill-row" style="margin-bottom:0.75rem;">
+      <span class="zil-tag zil-tag-green">{{ activity.year }}</span>
+      <span class="zil-tag">{{ activity.get_status_display }}</span>
+    </div>
+    <h1 class="zil-section-title" style="font-size:clamp(1.55rem,2.8vw,2.1rem);">{{ activity.title }}</h1>
+
+    <dl class="zil-grid zil-grid-2" style="margin-top:1.5rem;">
+      {% if activity.funder_collaborators %}
+      <div class="zil-card">
+        <dt class="zil-card-meta">Funder / collaborators</dt>
+        <dd class="zil-prose" style="margin:0.35rem 0 0;">{{ activity.funder_collaborators }}</dd>
+      </div>
+      {% endif %}
+      {% if activity.geographic_coverage %}
+      <div class="zil-card">
+        <dt class="zil-card-meta">Geographic coverage</dt>
+        <dd class="zil-prose" style="margin:0.35rem 0 0;">{{ activity.geographic_coverage }}</dd>
+      </div>
+      {% endif %}
+    </dl>
+
+    <h2 class="zil-card-meta" style="margin-top:1.75rem;">Purpose</h2>
+    <div class="zil-prose">{{ activity.purpose|linebreaks }}</div>
+
+    {% if activity.available_outputs %}
+    <h2 class="zil-card-meta" style="margin-top:1.5rem;">Available outputs</h2>
+    <p class="zil-prose">{{ activity.available_outputs }}</p>
+    {% endif %}
+
+    {% if activity.publications.exists %}
+    <h2 class="zil-card-meta" style="margin-top:1.75rem;">Linked publications</h2>
+    <ul class="zil-prose" style="margin-left:1.1rem;">
+      {% for pub in activity.publications.all %}
+      <li><a href="{{ pub.get_absolute_url }}">{{ pub.title }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if activity.theme %}
+    <p class="zil-muted" style="margin-top:1.5rem;">Related theme: <a href="{{ activity.theme.get_absolute_url }}">{{ activity.theme.title }}</a></p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

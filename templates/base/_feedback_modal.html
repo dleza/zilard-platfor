@@ -1,0 +1,14 @@
+<button type="button" class="feedback-button" data-feedback-open>Feedback</button>
+<div class="fixed inset-0 z-50 hidden items-end bg-slate-950/50 p-4 sm:items-center sm:justify-center" data-feedback-modal>
+  <section class="w-full max-w-lg rounded-lg bg-white shadow-xl" aria-labelledby="feedback-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+      <h2 id="feedback-title" class="text-lg font-semibold text-slate-950">Stakeholder feedback</h2>
+      <button type="button" class="icon-btn" data-feedback-close aria-label="Close feedback form">X</button>
+    </div>
+    <form id="global-feedback-form" hx-post="{% url 'feedback:submit' %}" hx-target="#feedback-panel-body" hx-swap="innerHTML" method="post">
+      <div id="feedback-panel-body">
+        {% include "feedback/_form.html" %}
+      </div>
+    </form>
+  </section>
+</div>

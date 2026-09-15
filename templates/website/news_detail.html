@@ -1,0 +1,26 @@
+{% extends "website/base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<section class="zil-section">
+  <div class="zil-wrap" style="max-width:48rem;">
+    <p class="zil-breadcrumb"><a href="{% url 'website:home' %}">Home</a> / <a href="{% url 'website:news' %}">News &amp; Events</a> / {{ article.title }}</p>
+    <span class="zil-tag {% if article.category == 'media' %}zil-tag-green{% endif %}">{{ article.get_category_display }}</span>
+    <h1 class="zil-section-title" style="font-size:clamp(1.55rem,2.8vw,2.1rem);margin-top:0.5rem;">{{ article.title }}</h1>
+    <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:600;">
+      {{ article.published_date|date:"j F Y" }}{% if article.location %} &middot; {{ article.location }}{% endif %}
+      {% if article.source_name %} &middot; Source: {{ article.source_name }}{% endif %}
+    </p>
+
+    {% if article.cover_image %}
+    <img src="{{ article.cover_image.url }}" alt="" style="width:100%;border-radius:0.75rem;margin:1.25rem 0;border:1px solid var(--zil-line);">
+    {% endif %}
+
+    <div class="zil-prose">{{ article.body|default:article.summary|linebreaks }}</div>
+
+    {% if article.source_url %}
+    <p style="margin-top:1.25rem;"><a class="zil-btn zil-btn-secondary" href="{{ article.source_url }}" rel="noopener" target="_blank">View original source</a></p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}Reports | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="grid gap-5">
+  <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-slate-950">Reports</h1>
+      <p class="mt-1 text-sm text-slate-600">View standard reports first, apply custom filters, then export the visible report.</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a class="btn-secondary" href="{{ export_csv_url }}">CSV</a>
+      <a class="btn-secondary" href="{{ export_xlsx_url }}">Excel</a>
+      <a class="btn-primary" href="{{ export_pdf_url }}">PDF</a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <form method="get" class="grid gap-4 md:grid-cols-4">
+      {% render_field filter_form.report %}
+      {% render_field filter_form.q %}
+      {% render_field filter_form.province %}
+      {% render_field filter_form.district %}
+      {% render_field filter_form.gender %}
+      {% render_field filter_form.disability_type %}
+      {% render_field filter_form.sector %}
+      {% render_field filter_form.employment_status %}
+      {% render_field filter_form.union %}
+      {% render_field filter_form.verified %}
+      {% render_field filter_form.capture_source %}
+      {% render_field filter_form.capture_mode %}
+      <div class="md:col-span-4 flex justify-end gap-2">
+        <a class="btn-secondary" href="{% url 'reports:index' %}">Reset</a>
+        <button class="btn-primary" type="submit">Generate report</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="panel-title">{{ report.title }}</h2>
+        <p class="mt-1 text-sm text-slate-600">
+          {{ report.total_count }} row{{ report.total_count|pluralize }}
+          {% if report.is_limited %}shown as first {{ report.limit }} rows on screen{% endif %}
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a class="btn-secondary" href="{{ export_csv_url }}">Export CSV</a>
+        <a class="btn-secondary" href="{{ export_xlsx_url }}">Export Excel</a>
+        <a class="btn-secondary" href="{{ export_pdf_url }}">Export PDF</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel overflow-hidden p-0">
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            {% for header in report.headers %}
+              <th scope="col">{{ header }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in report.rows %}
+          <tr>
+            {% for cell in row %}
+              <td>{{ cell }}</td>
+            {% endfor %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{{ report.headers|length }}" class="py-10 text-center text-slate-600">No records match this report.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}
