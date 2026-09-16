@@ -132,12 +132,12 @@ python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-pip install gunicorn psycopg2-binary python-decouple whitenoise
+pip install gunicorn psycopg2-binary whitenoise
 ```
 
-(`psycopg2-binary` is the PostgreSQL driver; `python-decouple` — or `django-environ`, whichever you prefer — reads the `.env` file; `whitenoise` serves static files efficiently even though Nginx will front the site.)
+(`psycopg2-binary` is the PostgreSQL driver; `whitenoise` serves static files efficiently even though Nginx will front the site.)
 
-If `requirements.txt` doesn't already list `gunicorn`, `psycopg2-binary`, `python-decouple`/`django-environ`, and `whitenoise`, add them so future deploys pick them up automatically:
+If `requirements.txt` doesn't already list `gunicorn`, `psycopg2-binary`, and `whitenoise`, add them so future deploys pick them up automatically:
 
 ```bash
 pip freeze > requirements.txt
@@ -158,11 +158,12 @@ DJANGO_DEBUG=False
 DJANGO_SECRET_KEY=replace-with-a-freshly-generated-secret-key
 DJANGO_ALLOWED_HOSTS=zilard.co.zm,www.zilard.co.zm,YOUR_VM_IP
 
-DB_NAME=zilard_db
-DB_USER=zilard_user
-DB_PASSWORD=the-password-you-set-in-step-4
-DB_HOST=localhost
-DB_PORT=5432
+DB_ENGINE=postgres
+POSTGRES_DB=zilard_db
+POSTGRES_USER=zilard_user
+POSTGRES_PASSWORD=the-password-you-set-in-step-4
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
 ```
 
 Generate a fresh secret key:
@@ -177,59 +178,64 @@ Lock the file down:
 chmod 600 .env
 ```
 
-### Update `config/settings.py` to read these values
+**Important:** `settings.py` reads these via plain `os.getenv()`, which only sees variables actually exported into the shell's environment — it will NOT automatically read `.env` just because the file exists. Systemd loads it automatically in production (via `EnvironmentFile=` in the service file, set up in Step 11), but whenever you run `manage.py` commands by hand (like the `migrate`/`loaddata` steps below), export it into your shell first:
 
-If `settings.py` doesn't already read from environment variables, update it now (adjust to match whatever's already there):
-
-```python
-from decouple import config, Csv
-
-SECRET_KEY = config("DJANGO_SECRET_KEY")
-DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", cast=Csv())
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST", default="localhost"),
-        "PORT": config("DB_PORT", default="5432"),
-    }
-}
-
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+```bash
+set -a
+source .env
+set +a
 ```
 
-Add whitenoise's middleware right after `SecurityMiddleware` in `MIDDLEWARE`:
+Do this once per shell session before running any `manage.py` command, or your commands will silently fall back to `settings.py`'s SQLite/debug defaults instead of Postgres.
+
+### Update `config/settings.py`
+
+Your `settings.py` already reads its configuration from environment variables natively via `os.getenv()` (no `python-decouple` needed, and no full rewrite required) — you only need two small, targeted additions. Do NOT paste explanatory sentences like this one into the file; only the code blocks below belong in `settings.py`.
+
+**1. Add the whitenoise middleware**, right after `"django.middleware.security.SecurityMiddleware",` in the existing `MIDDLEWARE` list:
 
 ```python
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # ...the rest unchanged
+    "core.middleware.MobileApiCorsMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "core.middleware.CurrentUserMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 ```
 
-Also add production security settings near the bottom of `settings.py`:
+**2. Add whitenoise's storage backend and production security settings**, right after the existing static/media block:
 
 ```python
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
-X_FRAME_OPTIONS = "DENY"
 ```
 
-Copy these edits back into your working copy of the project (Windows machine or repo) too, so they aren't lost on the next deploy.
+Verify the file still parses before running any `manage.py` command:
+
+```bash
+python -c "import ast; ast.parse(open('config/settings.py').read())" && echo "settings.py OK"
+```
+
+Copy these two edits back into your working copy of the project (Windows machine or repo) too, so they aren't lost on the next deploy.
 
 ---
 
