@@ -374,7 +374,7 @@ TEAM_MEMBERS = [
         "order": 2,
         "photo": "team/francis-phiri.jpg",
         "bio": (
-            "Mr. Phiri is a development communication and research professional with over eight "
+            "Mr. Phiri is a development communication and research professional with over 10 "
             "years of experience in research, programme management, communication, and policy "
             "analysis. He holds a Master of Communication for Development (MCD) and contributes to "
             "labour research, workers' education and training, advocacy, and programme "
@@ -540,9 +540,9 @@ class Command(BaseCommand):
 
         settings_obj = SiteSetting.load()
         if not settings_obj.office_address:
-            settings_obj.office_address = "Plot 260, Twin Palm Road, Ibex Hill, Lusaka, Zambia"
-            settings_obj.phone = "+260 211 269 783"
-            settings_obj.mobile = "+260 977 704 973"
+            settings_obj.office_address = "Solidarity House, Plot No. 9026, Buluwe Road, Woodlands, Lusaka, Zambia"
+            settings_obj.phone = "+260 21 126 9783"
+            settings_obj.mobile = "+260 97 77 04973"
             settings_obj.save()
             self.stdout.write("Set default site contact details (please verify and update in the admin).")
 

@@ -37,6 +37,7 @@
         <a href="{% url 'website:our-work' %}" class="zil-nav-link{% if request.resolver_match.url_name == 'our-work' or request.resolver_match.url_name == 'work-detail' %} is-active{% endif %}">Our Work</a>
         <a href="{% url 'website:research' %}" class="zil-nav-link{% if 'research' in request.resolver_match.url_name or 'publication' in request.resolver_match.url_name %} is-active{% endif %}">Research &amp; Publications</a>
         <a href="{% url 'website:news' %}" class="zil-nav-link{% if 'news' in request.resolver_match.url_name %} is-active{% endif %}">News &amp; Events</a>
+        <a href="/app/" class="zil-btn zil-btn-secondary zil-nav-cta">DLDMS Portal</a>
         <a href="{% url 'website:contact' %}" class="zil-btn zil-btn-primary zil-nav-cta">Contact Us</a>
       </nav>
     </div>

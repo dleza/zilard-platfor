@@ -1,18 +1,26 @@
 {% extends "base.html" %}
-{% load form_tags %}
+{% load static form_tags %}
 {% block title %}Sign in | {{ app_name }}{% endblock %}
 {% block content %}
-<div class="mx-auto grid max-w-md gap-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-  <div>
-    <h1 class="text-2xl font-semibold text-slate-950">Sign in</h1>
-    <p class="mt-1 text-sm text-slate-600">Disability-disaggregated labour data prototype</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-card-header">
+      <span class="auth-card-logo"><img src="{% static 'website/img/zilard-logo-mark.png' %}" alt="ZILARD logo"></span>
+      <h1 class="auth-card-title">Sign in to {{ app_short_name }}</h1>
+      <p class="auth-card-subtitle">Disability Labour Data Management System</p>
+    </div>
+
+    {% if form.non_field_errors %}
+      <div class="auth-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post" class="grid gap-4">
+      {% csrf_token %}
+      {% render_field form.username %}
+      {% render_field form.password %}
+      <button class="btn-primary w-full justify-center" type="submit">Sign in</button>
+    </form>
+
   </div>
-  <form method="post" class="grid gap-4">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {% render_field form.username %}
-    {% render_field form.password %}
-    <button class="btn-primary w-full justify-center" type="submit">Sign in</button>
-  </form>
 </div>
 {% endblock %}
