@@ -20,7 +20,7 @@
     <aside id="primary-sidebar" class="app-sidebar" aria-label="Main navigation">
       <div class="sidebar-header">
         <a href="{% url 'dashboards:home' %}" class="sidebar-brand">
-          <span class="brand-mark">DL</span>
+          <span class="brand-mark"><img src="{% static 'website/img/zilard-logo-mark.png' %}" alt="ZILARD logo"></span>
           <span>
             <span class="block text-base leading-tight">{{ app_short_name }}</span>
             <span class="block text-xs font-medium text-slate-600">Disability labour data</span>
@@ -53,12 +53,16 @@
 
     <div class="app-main">
       <div class="content-wrap pt-6">
-        <section class="landing-hero system-banner" aria-label="System banner">
-          <img src="{% static 'img/dldms-banner.svg' %}" alt="Disability Labour Data MIS banner showing inclusive workers, data cards, and Zambia coverage">
-          <div class="landing-hero-copy">
-            <strong class="landing-hero-title">{{ app_name }}</strong>
-            <span>Evidence for inclusive work, representation, and advocacy</span>
+        <section class="app-banner" aria-label="System banner">
+          <div class="app-banner-inner">
+            <img class="app-banner-logo" src="{% static 'website/img/zilard-logo-mark.png' %}" alt="ZILARD logo">
+            <div class="app-banner-copy">
+              <p class="app-banner-eyebrow">Zambia Institute for Labour Research and Development</p>
+              <strong class="app-banner-title">{{ app_name }}</strong>
+              <span class="app-banner-tagline">Evidence for inclusive work, representation, and advocacy</span>
+            </div>
           </div>
+          <div class="app-banner-flagbar" aria-hidden="true"></div>
         </section>
       </div>
 
@@ -75,7 +79,7 @@
   <header class="border-b border-slate-200 bg-white">
     <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
       <a href="{% url 'dashboards:home' %}" class="sidebar-brand">
-        <span class="brand-mark">DL</span>
+        <span class="brand-mark"><img src="{% static 'website/img/zilard-logo-mark.png' %}" alt="ZILARD logo"></span>
         <span>
           <span class="block text-base leading-tight">{{ app_short_name }}</span>
           <span class="block text-xs font-medium text-slate-600">Disability labour data</span>

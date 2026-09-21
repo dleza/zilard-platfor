@@ -10,12 +10,12 @@
     <h1 class="zil-section-title" style="font-size:clamp(1.7rem,3vw,2.3rem);">Institutional profile</h1>
     <div class="zil-prose" style="max-width:52rem;">
       <p>
-        The Zambia Institute for Labour Research and Development (ZILARD) is an independent,
-        non-profit research and policy institute dedicated to advancing decent work, inclusive
-        growth, and labour justice in Zambia. Established in 2018, ZILARD provides evidence-based
-        analysis, technical advice, and advocacy support to trade unions, government ministries,
-        development agencies, and civil society organisations working to improve the conditions of
-        work and livelihoods for Zambian workers.
+        The Zambia Institute for Labour Research and Development (ZILARD) is an autonomous
+        research, education and policy analysis institute, established in 2018 as a company limited
+        by guarantee under the Zambia Congress of Trade Unions (ZCTU). ZILARD exists to build the
+        capacity of the trade union movement for labour research, education and policy analysis, so
+        that trade unions can influence national, regional and international policy for
+        development.
       </p>
       <p>
         ZILARD is legally registered under the Patents and Companies Registration Agency (PACRA)
@@ -32,9 +32,9 @@
       <div class="zil-card">
         <p class="zil-card-meta">Mission</p>
         <p class="zil-prose" style="margin:0;">
-          To generate knowledge that empowers working people and shapes fairer economic policies,
-          with a strong emphasis on applied research, participatory methodologies, and capacity
-          building.
+          A labour research think-tank that capacitates trade unions with labour research,
+          education and policy analysis for effective input into national, regional and global
+          policy discussions and actions, for the benefit of the Zambian worker and people.
         </p>
       </div>
       <div class="zil-card">
@@ -47,6 +47,84 @@
         </p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">Our philosophy</p>
+    <h2 class="zil-section-title">A holistic view of development</h2>
+    <p class="zil-prose" style="max-width:52rem;">
+      ZILARD views development holistically, in pursuit of worker liberation and social justice.
+      This is driven by three factors:
+    </p>
+    <div class="zil-grid zil-grid-3">
+      <div class="zil-card">
+        <p class="zil-card-meta">Social factor</p>
+        <p class="zil-card-body">
+          Workers' and people's basic human rights are safeguarded, and the vulnerable are
+          protected from poverty and exploitation.
+        </p>
+      </div>
+      <div class="zil-card">
+        <p class="zil-card-meta">Democratic factor</p>
+        <p class="zil-card-body">
+          The political system functions ethically, implements decisions, and distributes
+          resources fairly and justly.
+        </p>
+      </div>
+      <div class="zil-card">
+        <p class="zil-card-meta">Global factor</p>
+        <p class="zil-card-body">
+          Systems at the global level respond to the needs of workers and the people.
+        </p>
+      </div>
+    </div>
+    <p class="zil-prose" style="max-width:52rem;margin-top:1.5rem;">
+      ZILARD stands for a redefinition of working-class ideological grounding, using
+      evidence-based research to build a critical trade union movement that understands its
+      values and can engage in national and international solidarity.
+    </p>
+    <p class="zil-card-meta" style="margin-bottom:0.6rem;">
+      Pursued through a parallel and joint programme of grassroots trade union activism, grounded in
+    </p>
+    <div class="zil-pill-row">
+      <span class="zil-pill">Independence</span>
+      <span class="zil-pill">Workers' control</span>
+      <span class="zil-pill">Bias to the poor</span>
+      <span class="zil-pill">Solidarity</span>
+    </div>
+  </div>
+</section>
+
+<section class="zil-section zil-section-tint">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">What shapes our work</p>
+    <h2 class="zil-section-title">Four contextual imperatives</h2>
+    <p class="zil-prose" style="max-width:52rem;">
+      ZILARD's research and programming are informed by four contextual imperatives:
+    </p>
+    <ol class="zil-prose" style="max-width:52rem;margin:0 0 0 1.1rem;">
+      <li>The evolving and dynamic challenges facing workers in the formal and informal economies, in Zambia and globally.</li>
+      <li>Workers and trade unions as agents of change.</li>
+      <li>The capacity and commitment of trade unions to bring about the change their members desire.</li>
+      <li>The recognition that lasting change can only be achieved through tripartite collective bargaining and genuine social dialogue between government, employers, and workers -- at local, national, and global levels.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="zil-section">
+  <div class="zil-wrap">
+    <p class="zil-eyebrow">How we deliver our mission</p>
+    <h2 class="zil-section-title">Objectives</h2>
+    <ul class="zil-prose" style="max-width:52rem;margin:0 0 0 1.1rem;">
+      <li>Initiate demand-driven labour research linked to an education agenda that refines trade union consciousness and ideological grounding.</li>
+      <li>Build the research capacity of trade unions to advocate for change through evidence-based policy positions for working people.</li>
+      <li>Strengthen research as a tool for effective education, training, and capacity building for better service delivery to members.</li>
+      <li>Assist in the development of empirically informed trade union policy interventions at the national, regional, and continental levels.</li>
+      <li>Maintain an accurate and accessible database on the economy and labour relations in Zambia.</li>
+      <li>Provide an online and offline platform for discussion on labour and national development issues.</li>
+    </ul>
   </div>
 </section>
 
@@ -109,15 +187,17 @@
     <h3 class="zil-card-meta" style="margin-top:1rem;">Leadership &amp; management</h3>
     <div class="zil-grid zil-team-grid">
       {% for person in team_leadership %}
-      <div class="zil-card" style="text-align:center;">
+      <div class="zil-card zil-team-card">
         {% if person.photo %}
           <img src="{{ person.photo.url }}" alt="Photo of {{ person.full_name }}" class="zil-team-photo">
         {% else %}
           <div class="zil-team-photo-placeholder" aria-hidden="true">{{ person.full_name|slice:":1" }}</div>
         {% endif %}
-        <h4 class="zil-card-title">{{ person.full_name }}</h4>
-        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:700;">{{ person.position }}</p>
-        {% if person.bio %}<p class="zil-card-body">{{ person.bio|truncatewords:38 }}</p>{% endif %}
+        <div class="zil-team-info">
+          <h4 class="zil-card-title">{{ person.full_name }}</h4>
+          <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:700;">{{ person.position }}</p>
+          {% if person.bio %}<p class="zil-card-body">{{ person.bio }}</p>{% endif %}
+        </div>
       </div>
       {% endfor %}
     </div>
@@ -127,14 +207,17 @@
     <h3 class="zil-card-meta" style="margin-top:2rem;">Staff</h3>
     <div class="zil-grid zil-team-grid">
       {% for person in team_staff %}
-      <div class="zil-card" style="text-align:center;">
+      <div class="zil-card zil-team-card">
         {% if person.photo %}
           <img src="{{ person.photo.url }}" alt="Photo of {{ person.full_name }}" class="zil-team-photo">
         {% else %}
           <div class="zil-team-photo-placeholder" aria-hidden="true">{{ person.full_name|slice:":1" }}</div>
         {% endif %}
-        <h4 class="zil-card-title">{{ person.full_name }}</h4>
-        <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:700;">{{ person.position }}</p>
+        <div class="zil-team-info">
+          <h4 class="zil-card-title">{{ person.full_name }}</h4>
+          <p class="zil-card-meta" style="color:var(--zil-ink-soft);text-transform:none;font-weight:700;">{{ person.position }}</p>
+          {% if person.bio %}<p class="zil-card-body">{{ person.bio }}</p>{% endif %}
+        </div>
       </div>
       {% endfor %}
     </div>
