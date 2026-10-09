@@ -389,10 +389,15 @@ TEAM_MEMBERS = [
         "order": 3,
         "photo": "team/stanley-zulu.jpg",
         "bio": (
-            "Mr. Zulu holds a Master's Degree in Economics and Finance from the University of Lusaka "
-            "and an Honours Degree in Economics from the University of Namibia, and is currently "
-            "pursuing a second Master's degree at the University of the Witwatersrand, South Africa. "
-            "He brings report writing, policy analysis, and policy-brief expertise to ZILARD."
+            "Mr Zulu is a Labour Economist, with expertise in labour economics, labour policy, "
+            "industrial relations, and socio-economic research. He holds a Master\u2019s Degree in "
+            "Labour Policy and Globalisation from the University of the Witwatersrand, South Africa, "
+            "a Master\u2019s Degree in Economics and Finance from the University of Lusaka, and an "
+            "Honours Degree in Economics from the University of Namibia. He brings extensive "
+            "experience in labour market research, policy analysis, report writing, and policy brief "
+            "development. His work focuses on generating evidence to inform labour policy, advance "
+            "workers\u2019 rights, strengthen trade unions, and promote decent work and inclusive "
+            "economic development in Zambia."
         ),
     },
     {
