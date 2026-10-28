@@ -52,7 +52,7 @@
     }
 
     if (event.target.closest('[data-capture-gps]')) {
-      captureFakeGps(event.target.closest('form') || document);
+      captureGps(event.target.closest('[data-capture-gps]'), event.target.closest('form') || document);
     }
   });
 
@@ -84,29 +84,93 @@
     }
   }
 
-  function captureFakeGps(scope) {
-    const provinceCenters = [
-      [-15.4167, 28.2833],
-      [-12.8058, 28.2132],
-      [-13.6333, 32.6500],
-      [-11.2000, 28.8833],
-      [-16.8000, 26.9833],
-      [-14.2333, 31.3167],
-      [-12.1789, 26.4000],
-      [-17.8500, 25.8667],
-      [-13.1339, 27.8493]
-    ];
-    const center = provinceCenters[Math.floor(Math.random() * provinceCenters.length)];
-    const lat = center[0] + (Math.random() - 0.5) * 1.2;
-    const lng = center[1] + (Math.random() - 0.5) * 1.2;
+  // Approximate province centres and the distance (km) within which a location is plausible.
+  const PROVINCE_AREAS = {
+    'Central': [-14.2, 27.9, 300],
+    'Copperbelt': [-13.0, 28.3, 200],
+    'Eastern': [-13.7, 32.2, 300],
+    'Luapula': [-11.1, 29.0, 260],
+    'Lusaka': [-15.4, 28.3, 150],
+    'Muchinga': [-11.8, 31.6, 320],
+    'Northern': [-10.3, 31.0, 320],
+    'North-Western': [-12.8, 25.5, 420],
+    'Southern': [-16.8, 26.8, 320],
+    'Western': [-15.5, 23.5, 380]
+  };
+
+  function distanceKm(lat1, lng1, lat2, lng2) {
+    const toRad = (d) => (d * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return 6371 * 2 * Math.asin(Math.sqrt(a));
+  }
+
+  function gpsStatusWriter(button) {
+    let el = button.parentElement && button.parentElement.querySelector('[data-gps-status]');
+    if (!el) {
+      el = document.createElement('p');
+      el.setAttribute('data-gps-status', 'true');
+      el.setAttribute('aria-live', 'polite');
+      el.className = 'mt-2 text-sm text-slate-700';
+      button.insertAdjacentElement('afterend', el);
+    }
+    return function (message, isWarning) {
+      el.textContent = message;
+      el.style.color = isWarning ? '#b45309' : '';
+    };
+  }
+
+  function captureGps(button, scope) {
     const latField = scope.querySelector('[data-gps-lat]');
     const lngField = scope.querySelector('[data-gps-lng]');
-    if (latField && lngField) {
-      latField.value = lat.toFixed(6);
-      lngField.value = lng.toFixed(6);
-      latField.dispatchEvent(new Event('input', { bubbles: true }));
-      lngField.dispatchEvent(new Event('input', { bubbles: true }));
+    if (!button || !latField || !lngField) return;
+    const say = gpsStatusWriter(button);
+    if (!('geolocation' in navigator)) {
+      say('This browser cannot capture a location. Type the latitude and longitude instead.', true);
+      return;
     }
+    button.disabled = true;
+    say('Getting your location. Please allow location access if asked...');
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        button.disabled = false;
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        latField.value = lat.toFixed(6);
+        lngField.value = lng.toFixed(6);
+        latField.dispatchEvent(new Event('input', { bubbles: true }));
+        lngField.dispatchEvent(new Event('input', { bubbles: true }));
+
+        let message = 'Location captured (accuracy about ' + Math.round(position.coords.accuracy) + ' m).';
+        let warn = false;
+        if (position.coords.accuracy > 1000) {
+          message += ' Accuracy is low. Computers often give a rough location, so use a phone or type the coordinates.';
+          warn = true;
+        }
+        const provinceSelect = scope.querySelector('[data-province-select]');
+        const area = provinceSelect && PROVINCE_AREAS[provinceSelect.value];
+        if (area) {
+          const away = distanceKm(lat, lng, area[0], area[1]);
+          if (away > area[2]) {
+            message += ' Warning: this is about ' + Math.round(away) + ' km from ' + provinceSelect.value +
+              ' Province. Check it is the worker\'s location, or correct the coordinates.';
+            warn = true;
+          }
+        }
+        say(message, warn);
+      },
+      function (error) {
+        button.disabled = false;
+        const reasons = {
+          1: 'Location access was denied. Allow location for this site in the browser, or type the coordinates.',
+          2: 'The location could not be determined. Try again or type the coordinates.',
+          3: 'Getting the location took too long. Try again or type the coordinates.'
+        };
+        say(reasons[error.code] || 'Could not capture the location. Type the coordinates instead.', true);
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+    );
   }
 
   function setupDrafts() {
