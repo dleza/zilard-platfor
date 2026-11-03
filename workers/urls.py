@@ -8,6 +8,7 @@ from users.views import (
 )
 
 from .views import (
+    EmploymentStatusUpdateView,
     OccupationCreateView,
     OccupationListView,
     OccupationUpdateView,
@@ -43,6 +44,7 @@ urlpatterns = [
     path("settings/user-categories/<int:pk>/edit/", SettingsUserCategoryFormView.as_view(), name="settings-user-category-edit"),
     path("<int:pk>/", WorkerDetailView.as_view(), name="detail"),
     path("<int:pk>/edit/", WorkerUpsertView.as_view(), name="edit"),
+    path("<int:pk>/employment/", EmploymentStatusUpdateView.as_view(), name="employment-update"),
     path("workplaces/", WorkplaceListView.as_view(), name="workplaces"),
     path("workplaces/new/", WorkplaceCreateView.as_view(), name="workplace-create"),
     path("workplaces/<int:pk>/edit/", WorkplaceUpdateView.as_view(), name="workplace-edit"),

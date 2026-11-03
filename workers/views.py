@@ -5,6 +5,8 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
@@ -12,6 +14,7 @@ from users.permissions import filter_workers_for_user, filter_workplaces_for_use
 
 from .forms import (
     DisabilityProfileForm,
+    EmploymentStatusUpdateForm,
     LabourRightsRecordForm,
     OccupationForm,
     TradeUnionForm,
@@ -20,7 +23,15 @@ from .forms import (
     WorkerForm,
     WorkplaceForm,
 )
-from .models import DisabilityProfile, LabourRightsRecord, Occupation, TradeUnion, Worker, Workplace
+from .models import (
+    DisabilityProfile,
+    EmploymentStatusHistory,
+    LabourRightsRecord,
+    Occupation,
+    TradeUnion,
+    Worker,
+    Workplace,
+)
 
 
 class SystemAdminRequiredMixin(LoginRequiredMixin):
@@ -108,6 +119,8 @@ class WorkerDetailView(LoginRequiredMixin, DetailView):
         except ObjectDoesNotExist:
             context["rights"] = None
         context["can_edit"] = self.request.user.can_edit_records
+        context["employment_history"] = self.object.employment_history.select_related("recorded_by")
+        context["employment_form"] = EmploymentStatusUpdateForm(initial={"status": self.object.employment_status})
         return context
 
 
@@ -144,6 +157,8 @@ class WorkerUpsertView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         disability, rights = self.get_related_instances()
+        # Read this before the form runs: validating a ModelForm changes the instance in place.
+        previous_status = self.worker.employment_status if self.worker else None
         worker_form = WorkerForm(request.POST, request.FILES, instance=self.worker)
         disability_form = DisabilityProfileForm(request.POST, instance=disability)
         rights_form = LabourRightsRecordForm(request.POST, instance=rights)
@@ -161,6 +176,15 @@ class WorkerUpsertView(LoginRequiredMixin, View):
             worker.updated_by = request.user
             worker.save()
             worker_form.save_m2m()
+
+            if previous_status != worker.employment_status:
+                EmploymentStatusHistory.objects.create(
+                    worker=worker,
+                    status=worker.employment_status,
+                    effective_date=timezone.localdate(),
+                    note="Initial status" if previous_status is None else "Changed on the worker record",
+                    recorded_by=request.user,
+                )
 
             disability = disability_form.save(commit=False)
             disability.worker = worker
@@ -221,16 +245,31 @@ class WorkplaceCreateView(LoginRequiredMixin, View):
         require_edit_permission(request.user)
         return super().dispatch(request, *args, **kwargs)
 
+    def get_next_url(self, request):
+        """A safe address to return to afterwards, e.g. the worker form the user came from."""
+        next_url = request.POST.get("next") or request.GET.get("next") or ""
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+        ):
+            return next_url
+        return ""
+
     def get(self, request):
-        return render(request, self.template_name, {"form": WorkplaceForm()})
+        return render(request, self.template_name, {"form": WorkplaceForm(), "next_url": self.get_next_url(request)})
 
     def post(self, request):
         form = WorkplaceForm(request.POST)
+        next_url = self.get_next_url(request)
         if form.is_valid():
-            workplace = form.save()
+            workplace = form.save(commit=False)
+            workplace.created_by = request.user
+            workplace.save()
+            if next_url:
+                messages.success(request, "Workplace saved. Select it in the Workplace field.")
+                return redirect(next_url)
             messages.success(request, "Workplace saved.")
             return redirect("workers:workplaces")
-        return render(request, self.template_name, {"form": form}, status=400)
+        return render(request, self.template_name, {"form": form, "next_url": next_url}, status=400)
 
 
 class WorkplaceUpdateView(WorkplaceCreateView):
@@ -248,6 +287,28 @@ class WorkplaceUpdateView(WorkplaceCreateView):
             messages.success(request, "Workplace saved.")
             return redirect("workers:workplaces")
         return render(request, self.template_name, {"form": form, "workplace": self.workplace}, status=400)
+
+
+class EmploymentStatusUpdateView(LoginRequiredMixin, View):
+    """Record a change of employment status as a new history entry, without creating a new worker record."""
+
+    def post(self, request, pk):
+        require_edit_permission(request.user)
+        worker = get_object_or_404(filter_workers_for_user(Worker.objects.all(), request.user), pk=pk)
+        form = EmploymentStatusUpdateForm(request.POST)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.worker = worker
+            entry.recorded_by = request.user
+            entry.save()
+            worker.employment_status = entry.status
+            worker.updated_by = request.user
+            worker.save(update_fields=["employment_status", "updated_by", "updated_at"])
+            messages.success(request, "Employment status updated.")
+        else:
+            problems = "; ".join(f"{field}: {', '.join(errors)}" for field, errors in form.errors.items())
+            messages.error(request, "Employment status was not updated. " + problems)
+        return redirect("workers:detail", pk=worker.pk)
 
 
 class SettingsHomeView(SystemAdminRequiredMixin, TemplateView):

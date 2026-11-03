@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 
 from .models import User
 
@@ -31,13 +32,14 @@ def filter_workers_for_user(queryset, user):
         return queryset.none()
     if user.is_superuser or user.role in ALL_DATA_ROLES:
         return queryset
+    # Union-scoped roles (focal person / data collector) always see the records they captured
+    # themselves, plus every record of their assigned union. Without this, a collector could not
+    # see a worker they had just entered if the worker's union differed from their assigned union,
+    # or if they had no assigned union.
+    own_records = Q(created_by=user)
     if user.assigned_union:
-        return queryset.filter(union_name__iexact=user.assigned_union)
-    # A union-scoped role (focal person / data collector) with no assigned_union
-    # configured has no data they're entitled to see. Fail closed here, rather than
-    # falling through to the unrestricted queryset, which would otherwise hand an
-    # unconfigured account visibility into every union's records.
-    return queryset.none()
+        return queryset.filter(Q(union_name__iexact=user.assigned_union) | own_records)
+    return queryset.filter(own_records)
 
 
 def filter_workplaces_for_user(queryset, user):
@@ -45,6 +47,8 @@ def filter_workplaces_for_user(queryset, user):
         return queryset.none()
     if user.is_superuser or user.role in ALL_DATA_ROLES:
         return queryset
+    # Union-scoped roles also see the workplaces they added themselves.
+    own_workplaces = Q(created_by=user)
     if user.assigned_union:
-        return queryset.filter(workers__union_name__iexact=user.assigned_union).distinct()
-    return queryset.none()
+        return queryset.filter(Q(workers__union_name__iexact=user.assigned_union) | own_workplaces).distinct()
+    return queryset.filter(own_workplaces)

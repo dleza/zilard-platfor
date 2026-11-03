@@ -10,6 +10,7 @@ from core.models import TimeStampedModel
 from .choices import (
     ACCESSIBILITY_STATUS_CHOICES,
     DISABILITY_TYPE_CHOICES,
+    EMPLOYER_TYPE_CHOICES,
     EMPLOYMENT_STATUS_CHOICES,
     GENDER_CHOICES,
     GROUPED_DISTRICT_CHOICES,
@@ -45,16 +46,34 @@ class Workplace(TimeStampedModel):
     district = models.CharField(max_length=80, choices=GROUPED_DISTRICT_CHOICES)
     address = models.CharField(max_length=255, blank=True)
     sector = models.CharField(max_length=60, choices=SECTOR_CHOICES)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True)
     accessibility_status = models.CharField(
         max_length=40,
         choices=ACCESSIBILITY_STATUS_CHOICES,
         default="not_assessed",
     )
     accommodations_available = models.BooleanField(default=False)
+    reasonable_accommodation_provided = models.TextField(
+        "Reasonable accommodation provided at workplace",
+        blank=True,
+        help_text="Describe the reasonable accommodation the employer provides, for example ramps, flexible hours or assistive technology.",
+    )
+    employer_type = models.CharField(
+        "Public or private sector",
+        max_length=20,
+        choices=EMPLOYER_TYPE_CHOICES,
+        blank=True,
+    )
     union_presence = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="created_workplaces",
+    )
 
     class Meta:
         ordering = ["employer_name", "district"]
@@ -176,8 +195,8 @@ class Worker(TimeStampedModel):
     leadership_participation = models.BooleanField(default=False)
     committee_participation = models.BooleanField(default=False)
     organising_activities = models.TextField(blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True)
     photo = models.ImageField(upload_to=worker_photo_path, blank=True)
     consent_to_store_data = models.BooleanField(default=True)
     data_verified = models.BooleanField(default=False)
@@ -254,6 +273,16 @@ class DisabilityProfile(TimeStampedModel):
     worker = models.OneToOneField(Worker, on_delete=models.CASCADE, related_name="disability_profile")
     disability_type = models.CharField(max_length=40, choices=DISABILITY_TYPE_CHOICES)
     other_disability_type = models.CharField(max_length=160, blank=True)
+    disability_description = models.TextField(
+        "Description of disability",
+        blank=True,
+        help_text="Explain the disability in the worker's own words or as described by a professional.",
+    )
+    disability_acquired_date = models.DateField(
+        "Date when disability was acquired",
+        null=True,
+        blank=True,
+    )
     severity = models.CharField(max_length=40, choices=SEVERITY_CHOICES)
     assistive_devices = models.TextField(blank=True)
     accommodation_requirements = models.TextField(blank=True)
@@ -271,6 +300,30 @@ class DisabilityProfile(TimeStampedModel):
 
     def __str__(self) -> str:
         return f"{self.worker.full_name} - {self.get_disability_type_display()}"
+
+
+class EmploymentStatusHistory(TimeStampedModel):
+    """One row per change of a worker's employment status, so the status can be updated without a new record."""
+
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE, related_name="employment_history")
+    status = models.CharField(max_length=40, choices=EMPLOYMENT_STATUS_CHOICES)
+    effective_date = models.DateField(default=timezone.localdate)
+    note = models.TextField(blank=True)
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="employment_status_updates",
+    )
+
+    class Meta:
+        ordering = ["-effective_date", "-created_at"]
+        verbose_name = "Employment status history entry"
+        verbose_name_plural = "Employment status history"
+
+    def __str__(self) -> str:
+        return f"{self.worker.full_name}: {self.get_status_display()} ({self.effective_date})"
 
 
 class WorkerDocument(TimeStampedModel):

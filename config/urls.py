@@ -3,6 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
 from workers.api import DisabilityProfileViewSet, WorkerViewSet, WorkplaceViewSet
@@ -18,6 +19,7 @@ urlpatterns = [
     # Public ZILARD website -- owns the root URL.
     path("", include("website.urls")),
     # Internal Disability Labour Data MIS (login required) now lives under /app/.
+    path("app/disclaimer/", TemplateView.as_view(template_name="disclaimer.html"), name="disclaimer"),
     path("app/", include("dashboards.urls")),
     path("app/workers/", include("workers.urls")),
     path("app/reports/", include("reports.urls")),

@@ -137,8 +137,8 @@
         button.disabled = false;
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        latField.value = lat.toFixed(6);
-        lngField.value = lng.toFixed(6);
+        latField.value = lat.toFixed(8);
+        lngField.value = lng.toFixed(8);
         latField.dispatchEvent(new Event('input', { bubbles: true }));
         lngField.dispatchEvent(new Event('input', { bubbles: true }));
 

@@ -199,14 +199,20 @@ UNION_MEMBERSHIP_CHOICES = [
 ]
 
 DISABILITY_TYPE_CHOICES = [
+    ("intellectual", "Intellectual disability"),
     ("physical", "Physical impairment"),
     ("visual", "Visual impairment"),
     ("hearing", "Hearing impairment"),
-    ("intellectual", "Intellectual disability"),
-    ("psychosocial", "Psychosocial disability"),
+    ("deaf_blind", "Deaf-blind"),
     ("albinism", "Albinism"),
     ("multiple", "Multiple disabilities"),
     ("other", "Other"),
+    ("psychosocial", "Psychosocial disability"),
+]
+
+EMPLOYER_TYPE_CHOICES = [
+    ("public", "Public sector"),
+    ("private", "Private sector"),
 ]
 
 SEVERITY_CHOICES = [

@@ -26,6 +26,7 @@
       {% render_field worker_form.nationality %}
       {% render_field worker_form.gender %}
       {% render_field worker_form.date_of_birth %}
+      {% render_field disability_form.disability_acquired_date %}
       {% render_field worker_form.phone %}
       {% render_field worker_form.email %}
       {% render_field worker_form.photo %}
@@ -38,7 +39,13 @@
     <div class="form-grid">
       {% render_field worker_form.province %}
       {% render_field worker_form.district %}
-      {% render_field worker_form.workplace %}
+      <div>
+        {% render_field worker_form.workplace %}
+        <p class="mt-2 text-sm text-slate-600">
+          Workplace not in the list?
+          <a class="font-semibold text-emerald-800 underline" href="{% url 'workers:workplace-create' %}?next={{ request.get_full_path|urlencode }}">Add a new workplace</a>
+        </p>
+      </div>
       {% render_field worker_form.sector %}
       {% render_field worker_form.occupation %}
       {% render_field worker_form.employment_status %}
@@ -53,16 +60,16 @@
   </section>
 
   <section class="panel">
-    <h2 class="panel-title">Disability and accommodation</h2>
+    <h2 class="panel-title">Disability information</h2>
     {{ disability_form.non_field_errors }}
     <div class="form-grid">
       {% render_field disability_form.disability_type %}
       {% render_field disability_form.other_disability_type %}
       {% render_field disability_form.severity %}
       {% render_field disability_form.assistive_devices %}
-      {% render_field disability_form.accommodation_requirements %}
-      {% render_field disability_form.accessibility_challenges %}
-      {% render_field disability_form.functional_limitations %}
+    </div>
+    <div class="mt-4">
+      {% render_field disability_form.disability_description %}
     </div>
     <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {% render_field disability_form.wg_seeing %}
@@ -71,6 +78,15 @@
       {% render_field disability_form.wg_remembering %}
       {% render_field disability_form.wg_self_care %}
       {% render_field disability_form.wg_communicating %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Disability accommodation</h2>
+    <div class="form-grid">
+      {% render_field disability_form.functional_limitations %}
+      {% render_field disability_form.accessibility_challenges %}
+      {% render_field disability_form.accommodation_requirements %}
     </div>
   </section>
 

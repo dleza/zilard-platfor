@@ -4,13 +4,14 @@
 {% block content %}
 <form method="post" class="grid gap-6" data-draft-form="workplace-{{ workplace.pk|default:'new' }}">
   {% csrf_token %}
+  {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
   <section class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
     <div>
       <h1 class="text-3xl font-semibold text-slate-950">{% if workplace %}Edit workplace{% else %}Add workplace{% endif %}</h1>
       <p class="mt-1 text-sm text-slate-600">{{ workplace|default:"Workplace accessibility profile" }}</p>
     </div>
     <div class="flex gap-2">
-      <a class="btn-secondary" href="{% url 'workers:workplaces' %}">Cancel</a>
+      <a class="btn-secondary" href="{% if next_url %}{{ next_url }}{% else %}{% url 'workers:workplaces' %}{% endif %}">Cancel</a>
       <button class="btn-primary" type="submit">Save workplace</button>
     </div>
   </section>

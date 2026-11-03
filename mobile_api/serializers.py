@@ -1,3 +1,5 @@
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
@@ -5,6 +7,30 @@ from feedback.models import StakeholderFeedback
 from users.models import User
 from workers.choices import PROVINCE_DISTRICTS
 from workers.models import DisabilityProfile, LabourRightsRecord, Worker, Workplace
+
+
+class CoordinateField(serializers.Field):
+    """Accept a coordinate at any precision and store it at 8 decimal places."""
+
+    def __init__(self, limit=180, **kwargs):
+        self.limit = limit
+        kwargs.setdefault("required", False)
+        kwargs.setdefault("allow_null", True)
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        if data in (None, ""):
+            return None
+        try:
+            value = Decimal(str(data).strip())
+        except (InvalidOperation, ValueError):
+            raise serializers.ValidationError("A valid coordinate is required.")
+        if not value.is_finite() or abs(value) > self.limit:
+            raise serializers.ValidationError(f"Coordinate must be between -{self.limit} and {self.limit}.")
+        return value.quantize(Decimal("0.00000001"), rounding=ROUND_HALF_UP)
+
+    def to_representation(self, value):
+        return None if value is None else format(value, "f")
 
 
 class MobileUserSerializer(serializers.ModelSerializer):
@@ -51,6 +77,9 @@ class MobileWorkplaceSerializer(serializers.ModelSerializer):
         if province and district and district not in PROVINCE_DISTRICTS.get(province, []):
             raise serializers.ValidationError({"district": "Select a district that belongs to the selected province."})
         return attrs
+
+    latitude = CoordinateField(limit=90)
+    longitude = CoordinateField(limit=180)
 
     class Meta:
         model = Workplace
@@ -184,6 +213,9 @@ class MobileWorkerSerializer(serializers.ModelSerializer):
             labour.save()
 
         return instance
+
+    latitude = CoordinateField(limit=90)
+    longitude = CoordinateField(limit=180)
 
     class Meta:
         model = Worker

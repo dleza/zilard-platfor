@@ -7,7 +7,7 @@
   <title>{% block title %}{{ app_name }}{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20260907-local-map-v2">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20261103-light-banner-footer">
   {% block extra_head %}{% endblock %}
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-950 antialiased">
@@ -100,6 +100,7 @@
   {% endif %}
     {% block content %}{% endblock %}
   </main>
+  {% include "base/_footer.html" %}
   {% if user.is_authenticated %}
     </div>
   </div>

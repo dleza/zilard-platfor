@@ -26,6 +26,7 @@
             <th scope="col">Employer</th>
             <th scope="col">Location</th>
             <th scope="col">Sector</th>
+            <th scope="col">Public / private</th>
             <th scope="col">Accessibility</th>
             <th scope="col">Workers</th>
             <th scope="col">Action</th>
@@ -37,12 +38,13 @@
             <td>{{ workplace.employer_name }}<span class="block text-xs text-slate-600">{{ workplace.workplace_name }}</span></td>
             <td>{{ workplace.district }}<span class="block text-xs text-slate-600">{{ workplace.province }}</span></td>
             <td>{{ workplace.get_sector_display }}</td>
+            <td>{{ workplace.get_employer_type_display|default:"-" }}</td>
             <td>{{ workplace.get_accessibility_status_display }}</td>
             <td>{{ workplace.workers.count }}</td>
             <td>{% if user.can_edit_records %}<a class="text-emerald-800 underline" href="{% url 'workers:workplace-edit' workplace.pk %}">Edit</a>{% endif %}</td>
           </tr>
           {% empty %}
-          <tr><td colspan="6" class="py-10 text-center text-slate-600">No workplace records.</td></tr>
+          <tr><td colspan="7" class="py-10 text-center text-slate-600">No workplace records.</td></tr>
           {% endfor %}
         </tbody>
       </table>

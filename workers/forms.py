@@ -1,7 +1,54 @@
+from decimal import Decimal
+
 from django import forms
+from django.core.validators import DecimalValidator
+from django.utils import timezone
 
 from .choices import DISABILITY_TYPE_CHOICES, GROUPED_DISTRICT_CHOICES, PROVINCE_CHOICES
-from .models import DisabilityProfile, LabourRightsRecord, Occupation, TradeUnion, Worker, WorkerDocument, Workplace
+from .models import (
+    DisabilityProfile,
+    EmploymentStatusHistory,
+    LabourRightsRecord,
+    Occupation,
+    TradeUnion,
+    Worker,
+    WorkerDocument,
+    Workplace,
+)
+
+COORDINATE_PRECISION = Decimal("0.00000001")  # 8 decimal places, about 1 mm
+
+
+class CoordinatePrecisionMixin:
+    """Keep the same decimal precision for GPS-captured and manually typed coordinates.
+
+    Typed values are accepted with any number of decimals and stored to 8 decimal places, rather than
+    being rejected or cut short, so manual and automatic capture behave the same way.
+    """
+
+    def relax_coordinate_fields(self):
+        for name in ("latitude", "longitude"):
+            field = self.fields.get(name)
+            if field is None:
+                continue
+            field.max_digits = None
+            field.decimal_places = None
+            field.validators = [v for v in field.validators if not isinstance(v, DecimalValidator)]
+            field.widget.attrs["step"] = "any"
+
+    def _clean_coordinate(self, name, limit):
+        value = self.cleaned_data.get(name)
+        if value is None:
+            return None
+        if abs(value) > limit:
+            raise forms.ValidationError(f"Enter a value between -{limit} and {limit}.")
+        return value.quantize(COORDINATE_PRECISION)
+
+    def clean_latitude(self):
+        return self._clean_coordinate("latitude", 90)
+
+    def clean_longitude(self):
+        return self._clean_coordinate("longitude", 180)
 
 
 class OccupationChoiceMixin:
@@ -80,7 +127,7 @@ class WorkerBaseForm(OccupationChoiceMixin, TradeUnionChoiceMixin, forms.ModelFo
         self.apply_trade_union_choices()
 
 
-class WorkerForm(TailwindFormMixin, OccupationChoiceMixin, TradeUnionChoiceMixin, forms.ModelForm):
+class WorkerForm(CoordinatePrecisionMixin, TailwindFormMixin, OccupationChoiceMixin, TradeUnionChoiceMixin, forms.ModelForm):
     class Meta:
         model = Worker
         fields = [
@@ -115,14 +162,15 @@ class WorkerForm(TailwindFormMixin, OccupationChoiceMixin, TradeUnionChoiceMixin
             "province": forms.Select(attrs={"data-province-select": "true"}),
             "district": forms.Select(attrs={"data-district-select": "true"}),
             "organising_activities": forms.Textarea(attrs={"rows": 3}),
-            "latitude": forms.NumberInput(attrs={"step": "0.000001", "data-gps-lat": "true"}),
-            "longitude": forms.NumberInput(attrs={"step": "0.000001", "data-gps-lng": "true"}),
+            "latitude": forms.NumberInput(attrs={"step": "any", "data-gps-lat": "true"}),
+            "longitude": forms.NumberInput(attrs={"step": "any", "data-gps-lng": "true"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.apply_occupation_choices()
         self.apply_trade_union_choices()
+        self.relax_coordinate_fields()
         self.apply_tailwind()
 
 
@@ -131,6 +179,8 @@ class DisabilityProfileForm(TailwindFormMixin, forms.ModelForm):
         model = DisabilityProfile
         exclude = ["worker"]
         widgets = {
+            "disability_description": forms.Textarea(attrs={"rows": 4}),
+            "disability_acquired_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
             "assistive_devices": forms.Textarea(attrs={"rows": 3}),
             "accommodation_requirements": forms.Textarea(attrs={"rows": 3}),
             "accessibility_challenges": forms.Textarea(attrs={"rows": 3}),
@@ -165,7 +215,7 @@ class WorkerDocumentForm(TailwindFormMixin, forms.ModelForm):
         self.apply_tailwind()
 
 
-class WorkplaceForm(TailwindFormMixin, forms.ModelForm):
+class WorkplaceForm(CoordinatePrecisionMixin, TailwindFormMixin, forms.ModelForm):
     accommodations_available = forms.TypedChoiceField(
         label="Accommodations available",
         choices=(("yes", "Yes"), ("no", "No")),
@@ -186,6 +236,8 @@ class WorkplaceForm(TailwindFormMixin, forms.ModelForm):
             "longitude",
             "accessibility_status",
             "accommodations_available",
+            "reasonable_accommodation_provided",
+            "employer_type",
             "union_presence",
             "notes",
         ]
@@ -193,8 +245,9 @@ class WorkplaceForm(TailwindFormMixin, forms.ModelForm):
             "province": forms.Select(attrs={"data-province-select": "true"}),
             "district": forms.Select(attrs={"data-district-select": "true"}),
             "notes": forms.Textarea(attrs={"rows": 3}),
-            "latitude": forms.NumberInput(attrs={"step": "0.000001", "data-gps-lat": "true"}),
-            "longitude": forms.NumberInput(attrs={"step": "0.000001", "data-gps-lng": "true"}),
+            "reasonable_accommodation_provided": forms.Textarea(attrs={"rows": 3}),
+            "latitude": forms.NumberInput(attrs={"step": "any", "data-gps-lat": "true"}),
+            "longitude": forms.NumberInput(attrs={"step": "any", "data-gps-lng": "true"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -203,6 +256,7 @@ class WorkplaceForm(TailwindFormMixin, forms.ModelForm):
             self.fields["accommodations_available"].initial = (
                 "yes" if self.instance and self.instance.accommodations_available else "no"
             )
+        self.relax_coordinate_fields()
         self.apply_tailwind()
 
 
@@ -256,3 +310,25 @@ class TradeUnionForm(TailwindFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.apply_tailwind()
+
+
+class EmploymentStatusUpdateForm(TailwindFormMixin, forms.ModelForm):
+    class Meta:
+        model = EmploymentStatusHistory
+        fields = ["status", "effective_date", "note"]
+        widgets = {
+            "effective_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+            "note": forms.Textarea(attrs={"rows": 2}),
+        }
+        labels = {"status": "New employment status", "effective_date": "Effective date", "note": "Note (optional)"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["effective_date"].initial = timezone.localdate
+        self.apply_tailwind()
+
+    def clean_effective_date(self):
+        value = self.cleaned_data["effective_date"]
+        if value > timezone.localdate():
+            raise forms.ValidationError("The effective date cannot be in the future.")
+        return value

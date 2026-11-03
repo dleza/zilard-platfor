@@ -1,0 +1,18 @@
+{% load static %}
+<footer class="app-footer" aria-label="System footer">
+  <div class="app-footer-inner">
+    <div class="app-footer-text">
+      <p class="app-footer-notice">
+        <strong>Confidential.</strong> This system holds personal and sensitive information about workers, including
+        disability information, collected with consent for labour research and policy advocacy. Use it only for
+        authorised purposes and do not share it without permission.
+        <a href="{% url 'disclaimer' %}">Read the full disclaimer</a>.
+      </p>
+      <p class="app-footer-copy">&copy; {% now "Y" %} Zambia Institute for Labour Research and Development (ZILARD).</p>
+    </div>
+    <div class="app-footer-support">
+      <span class="app-footer-support-label">Supported by</span>
+      <img class="app-footer-logo" src="{% static 'img/sask-logo.png' %}" alt="SASK">
+    </div>
+  </div>
+</footer>

@@ -130,3 +130,45 @@ class WorkerListViewTests(TestCase):
         self.client.login(username="admin_v", password="pw")
         response = self.client.get(reverse("workers:list"))
         self.assertEqual(response.status_code, 200)
+
+
+class FeedbackReleaseTests(TestCase):
+    def setUp(self):
+        self.collector = User.objects.create_user(
+            username="collector_f", password="pw", role=User.ROLE_DATA_COLLECTOR
+        )
+        self.admin = User.objects.create_user(username="admin_f", password="pw", role=User.ROLE_SYSTEM_ADMIN)
+
+    def test_collector_sees_own_records(self):
+        mine = make_worker(first_name="Mine", created_by=self.collector)
+        other = make_worker(first_name="Other")
+        visible = filter_workers_for_user(Worker.objects.all(), self.collector)
+        self.assertIn(mine, visible)
+        self.assertNotIn(other, visible)
+
+    def test_employment_status_update_records_history(self):
+        worker = make_worker()
+        self.client.force_login(self.admin)
+        response = self.client.post(
+            reverse("workers:employment-update", args=[worker.pk]),
+            {"status": "unemployed", "effective_date": "2026-01-10", "note": "Contract ended"},
+        )
+        self.assertEqual(response.status_code, 302)
+        worker.refresh_from_db()
+        self.assertEqual(worker.employment_status, "unemployed")
+        self.assertEqual(worker.employment_history.count(), 1)
+
+    def test_workplace_create_honours_safe_next_only(self):
+        self.client.force_login(self.admin)
+        url = reverse("workers:workplace-create")
+        unsafe = self.client.get(url, {"next": "https://evil.example/"})
+        self.assertEqual(unsafe.context["next_url"], "")
+        safe = self.client.get(url, {"next": "/app/workers/new/"})
+        self.assertEqual(safe.context["next_url"], "/app/workers/new/")
+
+    def test_long_precision_coordinates_are_quantized(self):
+        from decimal import Decimal
+        from mobile_api.serializers import CoordinateField
+
+        field = CoordinateField(limit=90)
+        self.assertEqual(field.to_internal_value("-15.416666666666"), Decimal("-15.41666667"))

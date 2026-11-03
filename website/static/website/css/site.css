@@ -422,14 +422,6 @@ a:hover { text-decoration: underline; }
   .zil-bead-rail { display: none; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .zil-bead-rail { animation: zil-bead-drift 9s linear infinite; }
-}
-
-@keyframes zil-bead-drift {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 0 128px, 0 128px; }
-}
 
 /* ---------------------------------------------------------------------
    Homepage slideshow
@@ -610,11 +602,10 @@ a:hover { text-decoration: underline; }
   .zil-bead-rail-h { display: none; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .zil-bead-rail-h { animation: zil-bead-drift-h 9s linear infinite; }
-}
-
-@keyframes zil-bead-drift-h {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 128px 0, 128px 0; }
+/* Decorative rails: one solid, static colour instead of the rotating Zambia-colour beads. */
+.zil-bead-rail,
+.zil-bead-rail-h {
+  background-image: none;
+  background-color: var(--flag-green);
+  animation: none;
 }
